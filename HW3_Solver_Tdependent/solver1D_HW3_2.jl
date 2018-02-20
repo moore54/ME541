@@ -275,29 +275,53 @@ Sstar = zeros(N_cv)
 Tstar = zeros(T)
 i = 1
 
-while true
 
-    T,node_x,Sstar = runsolver_iterative(N_cv,Tstar,Sstar;
-    h = h,
-    Tinf = Tinf,
-    Tb = Tb,
-    boundary = boundary,
-    rod_L = rod_L,
-    D = D,
-    epsilon = epsilon,
-    theta = theta,
-    k_in = k_in)
+function itersolve(N_cv,Tstar,Sstar;ii=1,
+    h = 10,
+    Tinf = 273,
+    Tb = 400,
+    boundary = 1E20,
+    rod_L = 0.02,
+    D = 0.003,
+    epsilon = 1.0,
+    theta = 5.67E-8,
+    k_in = 401)
+    while true
 
-    diff = maximum(abs.(T-Tstar))
+        T,node_x,Sstar = runsolver_iterative(N_cv,Tstar,Sstar;
+        h = h,
+        Tinf = Tinf,
+        Tb = Tb,
+        boundary = boundary,
+        rod_L = rod_L,
+        D = D,
+        epsilon = epsilon,
+        theta = theta,
+        k_in = k_in)
 
-    Tstar = copy(T)
+        diff = maximum(abs.(T-Tstar))
 
-    # println("i: $i diff $diff T: $Tstar")
-    i+=1
-    if i>5 && diff<1E-4
-        break
+        Tstar = copy(T)
+
+        # println("i: $i diff $diff T: $Tstar")
+        ii+=1
+        if ii>5 && diff<1E-4
+            break
+        end
     end
+    return T,node_x,Sstar
 end
+
+T,node_x,Sstar = runsolver_iterative(N_cv,Tstar,Sstar;
+h = h,
+Tinf = Tinf,
+Tb = Tb,
+boundary = boundary,
+rod_L = rod_L,
+D = D,
+epsilon = epsilon,
+theta = theta,
+k_in = k_in)
 
 analy_x = linspace(0,rod_L,100)
 n = sqrt(4*h/(D*k_in))
@@ -319,9 +343,37 @@ epsilon = 1.0
 Sstar = S_e0
 # Run until convergence
 Tstar = T_e0
-while true
+T,node_x,Sstar = runsolver_iterative(N_cv,Tstar,Sstar;
+h = h,
+Tinf = Tinf,
+Tb = Tb,
+boundary = boundary,
+rod_L = rod_L,
+D = D,
+epsilon = epsilon,
+theta = theta,
+k_in = k_in)
 
-    T,node_x,Sstar = runsolver_iterative(N_cv,Tstar,Sstar;
+figname = "HW3_3"
+PyPlot.figure(figname)
+PyPlot.plot(analy_x,Tanalyitical,label = L"Analytical $\epsilon$ = 0.0")
+PyPlot.plot(node_x,T,label = L"Iterative $\epsilon$ = 1.0")
+PyPlot.xlabel("x")
+PyPlot.ylabel("T (K)")
+PyPlot.legend(loc = "best")
+PyPlot.savefig(figname,transparent = true)
+
+epsilon = 0.0
+N_cv = zeros(5)
+N_cv[1] = 5
+for i = 2:length(N_cv)
+    N_cv[i] = N_cv[i-1]*2
+end
+N_cv = round.(Int,N_cv)
+j=0.0
+analytical_diff = zeros(length(N_cv))
+for j = 1:length(N_cv)
+    T,node_x,Sstar = runsolver_iterative(N_cv[j],Tstar,Sstar;
     h = h,
     Tinf = Tinf,
     Tb = Tb,
@@ -332,22 +384,15 @@ while true
     theta = theta,
     k_in = k_in)
 
-    diff = maximum(abs.(T-Tstar))
+    Tanalyitical = Tinf+(Tb-Tinf)*(cosh.(n*(rod_L-node_x)))/(cosh.(n*rod_L))
 
-    Tstar = copy(T)
-
-    # println("i: $i diff $diff T: $Tstar")
-    i+=1
-    if i>5 && diff<1E-4
-        break
-    end
+    analytical_diff[j] = maximum(abs.(T-Tanalyitical))
 end
 
-figname = "HW3_3"
+figname = "HW3_2_grid_conv"
 PyPlot.figure(figname)
-PyPlot.plot(analy_x,Tanalyitical,label = L"Analytical $\epsilon$ = 0.0")
-PyPlot.plot(node_x,T,label = L"Iterative $\epsilon$ = 1.0")
-PyPlot.xlabel("x")
-PyPlot.ylabel("T (K)")
-PyPlot.legend(loc = "best")
+PyPlot.loglog(N_cv,analytical_diff)
+PyPlot.xlabel("Elements")
+PyPlot.ylabel("Maximum Error")
+# PyPlot.legend(loc = "best")
 PyPlot.savefig(figname,transparent = true)

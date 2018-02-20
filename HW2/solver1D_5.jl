@@ -108,32 +108,33 @@ rc("axes.spines", right=false, top=false)
 rc("figure.subplot", left=0.18, bottom=0.18, top=0.97, right=0.72)
 rc("axes", color_cycle=["348ABD", "A60628", "009E73", "7A68A6", "D55E00", "CC79A7"])
 
-# PyPlot.close("all")
-# PyPlot.figure("5")
-# N_cv = [5,20]#linspace(5,100,7)
-# N_cv = round.(Int,N_cv)
-# for i = 1:length(N_cv)
-#     T,node_x = runsolver(N_cv[i])
-#     PyPlot.plot(node_x,T,label = "$(N_cv[i]) Volumes")
-#     PyPlot.pause(0.01)
-# end
-# PyPlot.xlabel("x")
-# PyPlot.ylabel("T (K)")
-# PyPlot.legend(loc = "best")
+PyPlot.close("all")
+PyPlot.figure("5")
+N_cv = [5,20]#linspace(5,100,7)
+N_cv = round.(Int,N_cv)
+T = []
+for i = 1:length(N_cv)
+    T,node_x = runsolver(N_cv[i])
+    PyPlot.plot(node_x,T,label = "$(N_cv[i]) Volumes")
+    PyPlot.pause(0.01)
+end
+PyPlot.xlabel("x")
+PyPlot.ylabel("T (K)")
+PyPlot.legend(loc = "best")
 
-PyPlot.figure("5c")
-N_cv = zeros(10)
-for i = 1:length(N_cv)
-    N_cv[i] = 2^(i+3)
-end
-N_cv2 = round.(Int,N_cv)
-T2 = zeros(length(N_cv))
-for i = 1:length(N_cv)
-# i = 1
-    T,node_x = runsolver(N_cv2[i])
-    T2[i] = T[1]
-    println(i)
-end
-PyPlot.semilogx(N_cv,T2)
-PyPlot.xlabel("Number Control Volumes")
-PyPlot.ylabel("T_max (K)")
+# PyPlot.figure("5c")
+# N_cv = zeros(10)
+# for i = 1:length(N_cv)
+#     N_cv[i] = 2^(i+3)
+# end
+# N_cv2 = round.(Int,N_cv)
+# T2 = zeros(length(N_cv))
+# for i = 1:length(N_cv)
+# # i = 1
+#     T,node_x = runsolver(N_cv2[i])
+#     T2[i] = T[1]
+#     println(i)
+# end
+# PyPlot.semilogx(N_cv,T2)
+# PyPlot.xlabel("Number Control Volumes")
+# PyPlot.ylabel("T_max (K)")
