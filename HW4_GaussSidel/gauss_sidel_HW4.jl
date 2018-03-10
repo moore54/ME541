@@ -4,15 +4,23 @@ using PyPlot
 function gauss_sidel(aw,ap,ae,bstar,Tstar,relax)
 
     T = zeros(Tstar)
-    i = 1
-    T[1] = (0+ae[i]*Tstar[i+1]+bstar[i])/ap[i]
-    for i = 2:length(Tstar)-1
-        T[i] = (aw[i]*T[i-1]+ae[i]*Tstar[i+1]+bstar[i])/ap[i]
-    end
-    T[end] = (aw[end]*T[end-1]+0+bstar[end])/ap[end]
+    ERR = 1E20
+    j=0
+    while ERR>1E-6
+        i = 1
+        T[1] = (0+ae[i]*Tstar[i+1]+bstar[i])/ap[i]
+        for i = 2:length(Tstar)-1
+            T[i] = (aw[i]*T[i-1]+ae[i]*Tstar[i+1]+bstar[i])/ap[i]
+        end
+        T[end] = (aw[end]*T[end-1]+0+bstar[end])/ap[end]
 
-    #Apply Relaxation
-    T = Tstar+relax*(T-Tstar)
+        #Apply Relaxation
+        T = Tstar+relax*(T-Tstar)
+        ERR = maximum(abs.(T-Tstar))
+        Tstar = copy(T)
+        j+=1
+        println(j)
+    end
 
     # println(Tstar)
     return T
@@ -145,7 +153,7 @@ function runsolver_iterative(N_cv,Tstar,Sstar;
     for i = 1:N_cv
 
         Sp[i] =-4/D*h-16*epsilon*theta/D*Tstar[i+1]^3
-        Sc[i] =4/D*h*Tinf#Sstar[i]-Sp[i]*Tstar[i+1]
+        Sc[i] =4/D*h*Tinf+12*epsilon*theta/D*Tstar[i+1]^4+4*epsilon*theta/D*Tinf^4#Sstar[i]-Sp[i]*Tstar[i+1] #4/D*h*Tinf#
 
     end
 
@@ -182,7 +190,7 @@ function runsolver_iterative(N_cv,Tstar,Sstar;
     #-------- Solve the System --------#
     # T = TDMA(aw,ap,ae,b)
     T = gauss_sidel(aw,ap,ae,b,Tstar,relax)
-    S = Sc + Sp.*T[2:end-1]
+    S = 0.0#Sc + Sp.*T[2:end-1]
 
     #------- Calculate Heat Flux -------#
 
@@ -203,8 +211,6 @@ rc("axes", color_cycle=["348ABD", "A60628", "009E73", "7A68A6", "D55E00", "CC79A
 
 
 #Initialize solution
-N_cv = 100
-
 h = 10
 Tinf = 273
 Tb = 400
@@ -215,7 +221,7 @@ epsilon = 1.0
 theta = 5.67E-8
 k_in = 401
 T0 = 400
-relax = 1.0
+relax = 1.2
 
 analy_x = linspace(0,rod_L,100)
 n = sqrt(4*h/(D*k_in))
