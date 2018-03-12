@@ -245,7 +245,7 @@ h = 10
 Tinf = 273
 Tb = 0#400
 boundary = 1E20
-rod_L = 0.02
+rod_L = 1.0
 D = 0.003
 epsilon = 0.0
 theta = 5.67E-8
@@ -306,7 +306,7 @@ for j = 1:length(u_vela)
 
         PyPlot.plot(node_x,T,".",color = color_cycle[i],label = "$(scheme_a[i])")
         PyPlot.xlabel("Y-location")
-        PyPlot.ylabel(L"\theta")
+        PyPlot.ylabel(L"\phi")
         PyPlot.legend(loc = "best")
         PyPlot.savefig("$(figname)_$(u_vela[j]).pdf",transparent = true)
 
