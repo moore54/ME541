@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.5.30)  13 MAR 2018 13:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2017.5.30)  14 MAR 2018 08:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -723,7 +723,7 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-<../Plots/domain.pdf, id=38, 963.6pt x 542.025pt>
+<../Plots/domain.pdf, id=42, 963.6pt x 542.025pt>
 File: ../Plots/domain.pdf Graphic file (type pdf)
  <use ../Plots/domain.pdf>
 Package pdftex.def Info: ../Plots/domain.pdf used on input line 60.
@@ -740,14 +740,14 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <../Plot
-s/domain.pdf>] <../Plots/validation.pdf, id=76, 433.62pt x 216.81pt>
+s/domain.pdf>] <../Plots/validation.pdf, id=80, 433.62pt x 216.81pt>
 File: ../Plots/validation.pdf Graphic file (type pdf)
 
 <use ../Plots/validation.pdf>
 Package pdftex.def Info: ../Plots/validation.pdf used on input line 92.
 (pdftex.def)             Requested size: 361.40659pt x 174.78426pt.
 
-<../Plots/cylinder_2_05_MeshScene2.png, id=79, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_05_MeshScene2.png, id=83, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_05_MeshScene2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_05_MeshScene2.png>
@@ -755,7 +755,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_05_MeshScene2.png used on input li
 ne 102.
 (pdftex.def)             Requested size: 337.31134pt x 173.49828pt.
  [2 <../Plots/validation.pdf> <../Plots/cylinder_2_05_MeshScene2.png>]
-<../Plots/cylinder_2_05_MeshScene2_2.png, id=132, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_05_MeshScene2_2.png, id=136, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_05_MeshScene2_2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_05_MeshScene2_2.png>
@@ -763,7 +763,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_05_MeshScene2_2.png used on input
 line 115.
 (pdftex.def)             Requested size: 231.39816pt x 168.41556pt.
 
-<../Plots/cylinder_2_05_MeshScene2_3.png, id=134, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_05_MeshScene2_3.png, id=138, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_05_MeshScene2_3.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_05_MeshScene2_3.png>
@@ -771,7 +771,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_05_MeshScene2_3.png used on input
 line 123.
 (pdftex.def)             Requested size: 231.39816pt x 168.41556pt.
 
-<../Plots/cylinder_2_05_ScalarScene2_Re150.png, id=139, 1060.96375pt x 736.7525
+<../Plots/cylinder_2_05_ScalarScene2_Re150.png, id=143, 1060.96375pt x 736.7525
 pt>
 File: ../Plots/cylinder_2_05_ScalarScene2_Re150.png Graphic file (type png)
  <use ../Plots/cylinder_2_05_ScalarScene2_Re150.png>
@@ -780,19 +780,19 @@ input line 133.
 (pdftex.def)             Requested size: 385.50183pt x 253.69485pt.
  [3 <../Plots/cylinder_2_05_MeshScene2_2.png> <../Plots/cylinder_2_05_MeshScene
 2_3.png> <../Plots/cylinder_2_05_ScalarScene2_Re150.png>]
-<../Plots/grid20.pdf, id=158, 216.81pt x 216.81pt>
+<../Plots/grid20.pdf, id=162, 216.81pt x 216.81pt>
 File: ../Plots/grid20.pdf Graphic file (type pdf)
  <use ../Plots/grid20.pdf>
 Package pdftex.def Info: ../Plots/grid20.pdf used on input line 150.
 (pdftex.def)             Requested size: 221.95143pt x 221.96371pt.
 
-<../Plots/grid150.pdf, id=160, 216.81pt x 216.81pt>
+<../Plots/grid150.pdf, id=164, 216.81pt x 216.81pt>
 File: ../Plots/grid150.pdf Graphic file (type pdf)
  <use ../Plots/grid150.pdf>
 Package pdftex.def Info: ../Plots/grid150.pdf used on input line 158.
 (pdftex.def)             Requested size: 221.95143pt x 221.96371pt.
 
-<../Plots/cylinder_2_1_MeshScene2.png, id=164, 1060.96375pt x 764.8575pt>
+<../Plots/cylinder_2_1_MeshScene2.png, id=168, 1060.96375pt x 764.8575pt>
 File: ../Plots/cylinder_2_1_MeshScene2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_1_MeshScene2.png>
@@ -800,7 +800,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_1_MeshScene2.png used on input lin
 e 170.
 (pdftex.def)             Requested size: 231.39816pt x 130.80023pt.
 
-<../Plots/cylinder_2_625_MeshScene2.png, id=166, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_625_MeshScene2.png, id=170, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_625_MeshScene2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_625_MeshScene2.png>
@@ -809,7 +809,7 @@ ine 178.
 (pdftex.def)             Requested size: 231.39816pt x 134.11638pt.
  [4 <../Plots/grid20.pdf> <../Plots/grid150.pdf> <../Plots/cylinder_2_1_MeshSce
 ne2.png> <../Plots/cylinder_2_625_MeshScene2.png>]
-<../Plots/cylinder_2_1_MeshScene2_2.png, id=254, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_1_MeshScene2_2.png, id=258, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_1_MeshScene2_2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_1_MeshScene2_2.png>
@@ -817,7 +817,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_1_MeshScene2_2.png used on input l
 ine 191.
 (pdftex.def)             Requested size: 231.39816pt x 177.13878pt.
 
-<../Plots/cylinder_2_625_MeshScene2_2.png, id=256, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_625_MeshScene2_2.png, id=260, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_625_MeshScene2_2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_625_MeshScene2_2.png>
@@ -825,7 +825,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_625_MeshScene2_2.png used on input
  line 199.
 (pdftex.def)             Requested size: 231.39816pt x 181.42488pt.
 
-<../Plots/cylinder_2_1_MeshScene3.png, id=258, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_1_MeshScene3.png, id=262, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_1_MeshScene3.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_1_MeshScene3.png>
@@ -833,7 +833,7 @@ Package pdftex.def Info: ../Plots/cylinder_2_1_MeshScene3.png used on input lin
 e 209.
 (pdftex.def)             Requested size: 231.39816pt x 179.20888pt.
 
-<../Plots/cylinder_2_625_MeshScene3.png, id=260, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_625_MeshScene3.png, id=264, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_625_MeshScene3.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_625_MeshScene3.png>
@@ -841,14 +841,14 @@ Package pdftex.def Info: ../Plots/cylinder_2_625_MeshScene3.png used on input l
 ine 217.
 (pdftex.def)             Requested size: 231.39816pt x 179.20888pt.
 
-<../Plots/boundary20.pdf, id=265, 252.945pt x 216.81pt>
+<../Plots/boundary20.pdf, id=269, 252.945pt x 216.81pt>
 File: ../Plots/boundary20.pdf Graphic file (type pdf)
 
 <use ../Plots/boundary20.pdf>
 Package pdftex.def Info: ../Plots/boundary20.pdf used on input line 232.
 (pdftex.def)             Requested size: 221.95143pt x 190.24751pt.
 
-<../Plots/boundary150.pdf, id=267, 252.945pt x 216.81pt>
+<../Plots/boundary150.pdf, id=271, 252.945pt x 216.81pt>
 File: ../Plots/boundary150.pdf Graphic file (type pdf)
 
 <use ../Plots/boundary150.pdf>
@@ -860,14 +860,14 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [5 <../Plots/cylinder_2_1_MeshScene2_2.png> <../Plots/cylinder_2_625_MeshScene2
 _2.png> <../Plots/cylinder_2_1_MeshScene3.png> <../Plots/cylinder_2_625_MeshSce
-ne3.png>] <../Plots/timestep150.pdf, id=289, 252.945pt x 216.81pt>
+ne3.png>] <../Plots/timestep150.pdf, id=293, 252.945pt x 216.81pt>
 File: ../Plots/timestep150.pdf Graphic file (type pdf)
 
 <use ../Plots/timestep150.pdf>
 Package pdftex.def Info: ../Plots/timestep150.pdf used on input line 258.
 (pdftex.def)             Requested size: 221.95143pt x 190.24751pt.
 
-<../Plots/II150.pdf, id=291, 252.945pt x 216.81pt>
+<../Plots/II150.pdf, id=295, 252.945pt x 216.81pt>
 File: ../Plots/II150.pdf Graphic file (type pdf)
  <use ../Plots/II150.pdf>
 Package pdftex.def Info: ../Plots/II150.pdf used on input line 266.
@@ -879,128 +879,172 @@ Overfull \hbox (48.01439pt too wide) in paragraph at lines 280--298
  [][] 
  []
 
-[7]
-<../Plots/cylinder_2_016_MeshScene2.png, id=455, 1060.96375pt x 736.7525pt>
+<../Plots/cylinder_2_016_MeshScene2.png, id=453, 1060.96375pt x 736.7525pt>
 File: ../Plots/cylinder_2_016_MeshScene2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_016_MeshScene2.png>
 Package pdftex.def Info: ../Plots/cylinder_2_016_MeshScene2.png used on input l
-ine 315.
+ine 314.
 (pdftex.def)             Requested size: 385.50183pt x 267.70392pt.
 
-<../Plots/cylinder_2_016_MeshScene2_2.png, id=457, 1045.9075pt x 764.8575pt>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<../Plots/cylinder_2_016_MeshScene2_2.png, id=455, 1045.9075pt x 764.8575pt>
 File: ../Plots/cylinder_2_016_MeshScene2_2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_016_MeshScene2_2.png>
 Package pdftex.def Info: ../Plots/cylinder_2_016_MeshScene2_2.png used on input
- line 326.
+ line 325.
 (pdftex.def)             Requested size: 231.39816pt x 189.23793pt.
 
-<../Plots/cylinder_2_016_MeshScene2_3.png, id=459, 1045.9075pt x 764.8575pt>
+<../Plots/cylinder_2_016_MeshScene2_3.png, id=457, 1045.9075pt x 764.8575pt>
 File: ../Plots/cylinder_2_016_MeshScene2_3.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_016_MeshScene2_3.png>
 Package pdftex.def Info: ../Plots/cylinder_2_016_MeshScene2_3.png used on input
- line 334.
+ line 333.
 (pdftex.def)             Requested size: 231.39816pt x 189.23793pt.
 
-<../Plots/cylinder_2_016_ScalarScene1_re20.png, id=461, 1045.9075pt x 764.8575p
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+<../Plots/cylinder_2_016_ScalarScene1_re20.png, id=459, 1045.9075pt x 764.8575p
 t>
 File: ../Plots/cylinder_2_016_ScalarScene1_re20.png Graphic file (type png)
  <use ../Plots/cylinder_2_016_ScalarScene1_re20.png>
 Package pdftex.def Info: ../Plots/cylinder_2_016_ScalarScene1_re20.png used on 
-input line 342.
+input line 341.
 (pdftex.def)             Requested size: 433.68497pt x 317.15318pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../Plots/cylinder_2_016_ScalarScene1.png, id=463, 1045.9075pt x 764.8575pt>
+<../Plots/cylinder_2_016_ScalarScene1.png, id=461, 1045.9075pt x 764.8575pt>
 File: ../Plots/cylinder_2_016_ScalarScene1.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_016_ScalarScene1.png>
 Package pdftex.def Info: ../Plots/cylinder_2_016_ScalarScene1.png used on input
- line 350.
+ line 349.
 (pdftex.def)             Requested size: 433.68497pt x 317.15318pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../Plots/cylinder_2_016_ScalarScene2.png, id=465, 1045.9075pt x 764.8575pt>
+<../Plots/cylinder_2_016_ScalarScene2.png, id=463, 1045.9075pt x 764.8575pt>
 File: ../Plots/cylinder_2_016_ScalarScene2.png Graphic file (type png)
 
 <use ../Plots/cylinder_2_016_ScalarScene2.png>
 Package pdftex.def Info: ../Plots/cylinder_2_016_ScalarScene2.png used on input
- line 358.
+ line 357.
 (pdftex.def)             Requested size: 433.68497pt x 317.15318pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../Plots/CD_time_20.pdf, id=467, 281.85298pt x 216.81pt>
+<../Plots/CD_time_20.pdf, id=465, 281.85298pt x 216.81pt>
 File: ../Plots/CD_time_20.pdf Graphic file (type pdf)
 
 <use ../Plots/CD_time_20.pdf>
-Package pdftex.def Info: ../Plots/CD_time_20.pdf used on input line 368.
+Package pdftex.def Info: ../Plots/CD_time_20.pdf used on input line 367.
 (pdftex.def)             Requested size: 231.39816pt x 178.00368pt.
 
-<../Plots/CD_time_150.pdf, id=469, 281.85298pt x 216.81pt>
+<../Plots/CD_time_150.pdf, id=467, 281.85298pt x 216.81pt>
 File: ../Plots/CD_time_150.pdf Graphic file (type pdf)
 
 <use ../Plots/CD_time_150.pdf>
-Package pdftex.def Info: ../Plots/CD_time_150.pdf used on input line 376.
+Package pdftex.def Info: ../Plots/CD_time_150.pdf used on input line 375.
 (pdftex.def)             Requested size: 231.39816pt x 178.00368pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-<../Plots/Ave_20.pdf, id=471, 281.85298pt x 216.81pt>
+<../Plots/Ave_20.pdf, id=469, 281.85298pt x 216.81pt>
 File: ../Plots/Ave_20.pdf Graphic file (type pdf)
 
 <use ../Plots/Ave_20.pdf>
-Package pdftex.def Info: ../Plots/Ave_20.pdf used on input line 386.
+Package pdftex.def Info: ../Plots/Ave_20.pdf used on input line 385.
 (pdftex.def)             Requested size: 231.39816pt x 178.00368pt.
 
-<../Plots/Ave_150.pdf, id=473, 281.85298pt x 216.81pt>
+<../Plots/Ave_150.pdf, id=471, 281.85298pt x 216.81pt>
 File: ../Plots/Ave_150.pdf Graphic file (type pdf)
 
 <use ../Plots/Ave_150.pdf>
-Package pdftex.def Info: ../Plots/Ave_150.pdf used on input line 394.
+Package pdftex.def Info: ../Plots/Ave_150.pdf used on input line 393.
 (pdftex.def)             Requested size: 231.39816pt x 178.00368pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 400.
-[8 <../Plots/cylinder_2_016_MeshScene2.png> <../Plots/cylinder_2_016_MeshScene2
-_2.png> <../Plots/cylinder_2_016_MeshScene2_3.png>] [9 <../Plots/cylinder_2_016
-_ScalarScene1_re20.png> <../Plots/cylinder_2_016_ScalarScene1.png>] [10 <../Plo
-ts/cylinder_2_016_ScalarScene2.png> <../Plots/CD_time_20.pdf> <../Plots/CD_time
-_150.pdf>] [11 <../Plots/Ave_20.pdf> <../Plots/Ave_150.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 400.
+[7] [8 <../Plots/cylinder_2_016_MeshScene2.png> <../Plots/cylinder_2_016_MeshSc
+ene2_2.png> <../Plots/cylinder_2_016_MeshScene2_3.png>] [9 <../Plots/cylinder_2
+_016_ScalarScene1_re20.png> <../Plots/cylinder_2_016_ScalarScene1.png>]
+[10 <../Plots/cylinder_2_016_ScalarScene2.png> <../Plots/CD_time_20.pdf> <../Pl
+ots/CD_time_150.pdf>] [11 <../Plots/Ave_20.pdf> <../Plots/Ave_150.pdf>]
+<../Plots/start.png, id=656, 1060.96375pt x 736.7525pt>
+File: ../Plots/start.png Graphic file (type png)
+
+<use ../Plots/start.png>
+Package pdftex.def Info: ../Plots/start.png used on input line 406.
+(pdftex.def)             Requested size: 385.50183pt x 252.76964pt.
+ <../Plots/mid.png, id=658, 1060.96375pt x 736.7525pt>
+File: ../Plots/mid.png Graphic file (type png)
+
+<use ../Plots/mid.png>
+Package pdftex.def Info: ../Plots/mid.png used on input line 416.
+(pdftex.def)             Requested size: 385.50183pt x 252.76964pt.
+
+<../Plots/nearfull.png, id=660, 1060.96375pt x 736.7525pt>
+File: ../Plots/nearfull.png Graphic file (type png)
+
+<use ../Plots/nearfull.png>
+Package pdftex.def Info: ../Plots/nearfull.png used on input line 426.
+(pdftex.def)             Requested size: 385.50183pt x 252.76964pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<../Plots/full.png, id=662, 1060.96375pt x 736.7525pt>
+File: ../Plots/full.png Graphic file (type png)
+ <use ../Plots/full.png>
+Package pdftex.def Info: ../Plots/full.png used on input line 436.
+(pdftex.def)             Requested size: 385.50183pt x 252.76964pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<../Plots/after.png, id=664, 1060.96375pt x 736.7525pt>
+File: ../Plots/after.png Graphic file (type png)
+
+<use ../Plots/after.png>
+Package pdftex.def Info: ../Plots/after.png used on input line 446.
+(pdftex.def)             Requested size: 385.50183pt x 252.76964pt.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 452.
+ [12
+
+ <../Plots/start.png> <../Plots/mid.png>] [13 <../Plots/nearfull.png> <../Plots
+/full.png>] [14 <../Plots/after.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 452.
 
 (./MooreStarProj.aux
 Package cleveref Info: loaded `english' language definitions on input line 19.
 Package cleveref Info: loaded `english' language definitions on input line 23.
 )
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 400.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 400.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 452.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 452.
 Package rerunfilecheck Info: File `MooreStarProj.out' has not changed.
-(rerunfilecheck)             Checksum: D831231F7634550DEC5A118CC48284A8;455.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 400.
+(rerunfilecheck)             Checksum: A74D7AD648CEC1783A7132516AACDD52;520.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 452.
  ) 
 Here is how much of TeX's memory you used:
- 8513 strings out of 493013
- 136678 string characters out of 6133343
- 259233 words of memory out of 5000000
- 11896 multiletter control sequences out of 15000+600000
- 7208 words of font info for 28 fonts, out of 8000000 for 9000
+ 8559 strings out of 493013
+ 137422 string characters out of 6133343
+ 262233 words of memory out of 5000000
+ 11929 multiletter control sequences out of 15000+600000
+ 7515 words of font info for 29 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 28i,9n,32p,1078b,404s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 28i,9n,32p,1078b,402s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb
@@ -1008,10 +1052,10 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></
 usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></us
 r/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
-Output written on MooreStarProj.pdf (11 pages, 1884735 bytes).
+Output written on MooreStarProj.pdf (14 pages, 2092923 bytes).
 PDF statistics:
- 690 PDF objects out of 1000 (max. 8388607)
- 271 compressed objects within 3 object streams
- 50 named destinations out of 1000 (max. 500000)
- 373 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 733 PDF objects out of 1000 (max. 8388607)
+ 296 compressed objects within 3 object streams
+ 59 named destinations out of 1000 (max. 500000)
+ 436 words of extra memory for PDF output out of 10000 (max. 10000000)
 

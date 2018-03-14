@@ -301,7 +301,6 @@ I was pleased with the outcomes of the study in that: First the results were qui
 
 The ending Von Karman frequency turned out to be 4.18 Hz, slightly larger than the original simulation's 4.08 Hz, and somewhat larger than the analytical 3.9 Hz.  I did find though that by decreasing the time step and increasing the number of inner iterations, the frequency was lowered slightly.  If my objective in this study was to fully and accurately resolve the wake frequency characteristics, a much more rigorous study would need to be made with experimental Von Karman wake data.
 
-\newpage
 \section{Star-CCM+ Tutorials}
 
    While I did not complete any tutorials for this assignment I have had previous experience with Star-CCM+ and 2D incompressible flows.  The tutorials on moving reference frame and transient fan simulations would be of interest for single propeller validation studies with wake profiles in mind.  The tutorials on sound modeling could also be useful if I decide to do CFD while creating a sound model for propeller design optimization.  
@@ -395,6 +394,59 @@ The following figures show the mesh, velocity and vorticity solutions, and time 
 \caption{\vspace{0pt}Final simulation average fluid domain vorticity as a function of time Re 150.}
 \label{f:Ave_150}
 \end{minipage}
+\end{figure}
+
+\FloatBarrier
+\subsection{Wake Development}
+
+\vspace{-5pt}
+
+ \begin{figure}[h]
+\centering
+\includegraphics[trim={0.5cm 1.5cm 0.5cm .6cm},clip,width=0.8\textwidth]{start}
+\vspace{-5pt}
+\caption{Re 150 beginning wake.}
+\label{f:start}
+\end{figure}
+
+\vspace{-5pt}
+
+ \begin{figure}[h]
+\centering
+\includegraphics[trim={0.5cm 1.5cm 0.5cm .6cm},clip,width=0.8\textwidth]{mid}
+\vspace{-5pt}
+\caption{Re 150 mid development wake}
+\label{f:mid}
+\end{figure}
+
+\vspace{-5pt}
+
+ \begin{figure}[h]
+\centering
+\includegraphics[trim={0.5cm 1.5cm 0.5cm .6cm},clip,width=0.8\textwidth]{nearfull}
+\vspace{-5pt}
+\caption{Re 150 near full developed wake.}
+\label{f:nearfull}
+\end{figure}
+
+\vspace{-5pt}
+
+ \begin{figure}[h]
+\centering
+\includegraphics[trim={0.5cm 1.5cm 0.5cm .6cm},clip,width=0.8\textwidth]{full}
+\vspace{-5pt}
+\caption{Re 150 fully developed wake.}
+\label{f:full}
+\end{figure}
+
+\vspace{-5pt}
+
+ \begin{figure}[t!]
+\centering
+\includegraphics[trim={0.5cm 1.5cm 0.5cm .6cm},clip,width=0.8\textwidth]{after}
+\vspace{-5pt}
+\caption{Re 150 opposite vortex being shed.}
+\label{f:after}
 \end{figure}
 
 \end{document}
