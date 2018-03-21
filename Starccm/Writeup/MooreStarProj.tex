@@ -30,16 +30,16 @@ linkcolor=blue}
 
 \title{\vspace{-20pt}Infinite Cylinder CFD Simulation Verification and Validation}
 \author{Kevin R. Moore}
-\affil{\vspace{-10pt}Brigham Young University}
+\affil{\vspace{-5pt}Brigham Young University}
 \renewcommand\Authands{, }
-\date{}
+\date{\vspace{-10pt}\today}
 
 \begin{document}
 
 \maketitle
-\vspace{-15pt}
+\vspace{-10pt}
 %\section{Project Overview}
-   \textbf{The purpose of this study is to demonstrate proficiency in the areas of verification and validation of CFD in light of an open ended problem definition; Explore laminar flow over a cylinder.  I performed this in four steps: First, I developed a simulation according to rules of thumb that validated against experimental data within 2\% of the coefficient of drag (\textit{Calculation of Drag Coefficient for Arrays of Emergent Circular Cylinders with Pseudofluid Model} by Cheng).  Second, I changed the mesh density to show grid independence.  Third, I used the chosen new mesh and changed the domain boundary size to show boundary independence.  Fourth, I revisited the temporal and transient solver parameters to verify temporal independence with the changes from the base rule of thumb simulation. }
+   \textbf{The purpose of this study is to demonstrate proficiency in the areas of verification and validation of CFD in light of an open ended problem definition; Explore laminar flow over a cylinder.  I performed this in four steps: First, I developed a simulation according to rules of thumb that validated against experimental data within 1.5\% of the coefficient of drag (\textit{Calculation of Drag Coefficient for Arrays of Emergent Circular Cylinders with Pseudofluid Model} by Cheng).  Second, I changed the mesh density to show grid independence.  Third, I used the chosen new mesh and changed the domain boundary size to show boundary independence.  Fourth, I revisited the temporal and transient solver parameters to verify temporal independence with the changes from the base rule of thumb simulation. }
 
 \vspace{0pt}
 
@@ -58,7 +58,7 @@ With the objective to model laminar flow over a cylinder, I chose a domain that,
 \begin{figure}[h!]
 \centering
 \includegraphics[trim={6.5cm 2.5cm 4.0cm 3cm},clip,width=0.60\textwidth]{domain}
-\caption{Example mesh grid showing progressive refinement around the flexible beam area.}
+\caption{General domain representation, to scale for the final chosen simulation.}
 \label{f:domain}
 \end{figure}
 
@@ -105,7 +105,7 @@ Following best practices as described by CD-Adapco, Dr. Ning, and my previous ex
 \label{f:mesh05_1}
 \end{figure}
 
-I chose 20 prism layers with a 20\% growth rate, a minimum thickness of 2.5E-4, or enough to satisfy the y+ condition for both Reynolds numbers and amply resolve the boundary layer.  However, while the total thickness of the prism layer was adequate for Re 20, I failed to include enough for Re 150 by a factor of about 2.  This doesn't appear to affect the validation solutions though because of the relatively well refined unstructured mesh and prism layer lateral discretization.  The boundary layer (besides the lateral discretization based on the target surface size) was not investigated based on the intent and time constraints of the project.  The number of cells for this base case, including the prism layers was 6,163 cells. \Crefrange{f:mesh05_2}{f:mesh05_3} show a closer-up image of the cylinder and prism mesh respectively.  
+I chose 20 prism layers with a 20\% growth rate, a minimum thickness of 2.5E-4, or enough to satisfy the y+ condition for both Reynolds numbers and amply resolve the boundary layer.  However, while the total thickness of the prism layer was adequate for Re 20, I failed to include enough thickness for Re 150 by a factor of about 2.  This doesn't appear to affect the validation solutions though because of the relatively well refined unstructured mesh and prism layer lateral discretization.  The boundary layer (besides the lateral discretization based on the target surface size) was not investigated based on the intent and time constraints of the project.  The number of cells for this base case, including the prism layers was 6,163 cells. \Crefrange{f:mesh05_2}{f:mesh05_3} show a closer-up image of the cylinder and prism mesh respectively.  
 
 
 \begin{figure}[h]
@@ -121,18 +121,18 @@ I chose 20 prism layers with a 20\% growth rate, a minimum thickness of 2.5E-4, 
 \begin{minipage}{.49\textwidth}
   \centering
 \includegraphics[trim={1.0cm 0cm 1.4cm .5cm},clip,width=0.98\textwidth]{cylinder_2_05_MeshScene2_3.png}
-\caption{\vspace{10pt} Cell growth from prism layers to unstructured mesh is course though adequate for the baseline mesh.}
+\caption{\vspace{0pt} Cell growth from prism layers to unstructured mesh is course though adequate for the baseline mesh.}
 \label{f:mesh05_3}
 \end{minipage}
 \end{figure}
  
- Because I had the luxury of using a 32 core workstation, I was able to tune the temporal parameters on the fly.  I found that the steady state solution as shown by both the force time history as well as the average vorticity in the domain occurred in 5 seconds for Re 150 and 15 seconds for Re 20.  These model times correspond to allowing a particle in the wake traverse the entire domain 2.5x for Re 150 and 1.1x for Re 20.  Plots of these time histories can be seen in \crefrange{f:Ave_150}{f:CD_time_20} in Appendix A.  I changed the inner iterations parameter between 2 and 10 iterations and found 5 to be adequate.  I also changed the time step from 0.1 to 0.0005 and found 0.005 to be adequate.  With this simulation, I calculated the drag coefficient for both Reynolds numbers and found the agreement to the experimental data to be excellent as discussed above.  \Cref{f:scalar05_1} shows the velocity response and clearly shows the Von-Karman vortex shedding into the wake. 
+ Because I had the luxury of using a 32 core workstation, I was able to tune the temporal parameters on the fly.  I found that the steady state solution as shown by both the force time history as well as the average vorticity in the domain occurred in 5 seconds for Re 150 and 15 seconds for Re 20.  These model times correspond to allowing a particle in the wake traverse the entire domain 2.5x for Re 150 and 1.1x for Re 20.  Plots of these time histories can be seen in \crefrange{f:Ave_150}{f:CD_time_20} in Appendix A.  I changed the inner iterations parameter between 2 and 10 iterations and found 6 to be adequate.  I also changed the time step from 0.1 to 0.0005 and found 0.005 to be adequate.  With this simulation, I calculated the drag coefficient for both Reynolds numbers and found the agreement to the experimental data to be excellent as discussed above.  \Cref{f:scalar05_1} shows the velocity response and clearly shows the Von-Karman vortex shedding into the wake. 
  
  \begin{figure}[h]
 \centering
 \includegraphics[trim={1.5cm 0cm 1.0cm 3cm},clip,width=0.8\textwidth]{cylinder_2_05_ScalarScene2_Re150.png}
 \vspace{-5pt}
-\caption{Initial simulation validation against data from Cheng. Validated to within 1.49\% for the Re 150 case and 0.27\% for the Re 20 case. }
+\caption{Initial simulation vorticity magnitude shows that a relatively coarse wake mesh is adequate at resolving forces on the cylinder body. }
 \label{f:scalar05_1}
 \end{figure}
 
@@ -161,7 +161,7 @@ Using the baseline simulation, I changed the grid base size to include a range f
 \end{minipage}
 \end{figure}
 
-\Crefrange{f:cylinder_2_1_MeshScene2}{f:cylinder_2_625_MeshScene2} show the big picture range of mesh discretization.  With the discretization I have chosen, the suggested growth rate of 20\% between cells is met, while the wake regions are amply refined.  This enables an efficient distribution of cells in the regions of high vorticity. 
+\Crefrange{f:cylinder_2_1_MeshScene2}{f:cylinder_2_625_MeshScene2} show the big picture range of mesh discretization from coarsest to finest.  With the discretization I have chosen, the suggested growth rate of 20\% between cells is met, while the wake regions are amply refined.  This enables an efficient distribution of cells in the regions of high vorticity. 
 
 \begin{figure}[h]
 \centering
@@ -182,7 +182,7 @@ Using the baseline simulation, I changed the grid base size to include a range f
 \end{figure}
 
 \newpage
-\Crefrange{f:cylinder_2_1_MeshScene2_2}{f:cylinder_2_625_MeshScene3} give a closer look at the regions around the cylinder and also in the boundary layer mesh for the coarsest and finest meshes.  Note the fine lateral discretization in \cref{f:cylinder_2_625_MeshScene3} which enabled me to get away with not completely including the full boundary layer size in the prism layer mesh for the Re 150 case.  Also shown in \cref{f:cylinder_2_625_MeshScene3}, some slight modifications to the prism layer to unstructured mesh transition would need to be made for a more rigorous study, but for the chosen mesh with a base size of twice the finest mesh, the transition was adequate.  
+\Crefrange{f:cylinder_2_1_MeshScene2_2}{f:cylinder_2_625_MeshScene3} give a closer look at the regions around the cylinder and also in the boundary layer mesh for the coarsest and finest meshes.  Note the fine lateral discretization in \cref{f:cylinder_2_625_MeshScene3} which enabled me to get away with not completely including the full boundary layer thickness in the prism layer mesh for the Re 150 case.  Also shown in \cref{f:cylinder_2_625_MeshScene3}, some slight modifications to the prism layer to unstructured mesh transition would need to be made for a more rigorous study, but for the chosen mesh with a base size of twice the finest mesh, the transition was adequate.  
 
 \begin{figure}[h]
 \centering
@@ -238,7 +238,7 @@ While conducting the boundary independence study, it became apparent that my inl
 \begin{minipage}{.47\textwidth}
   \centering
 \includegraphics[trim={0.0cm 0cm 0.0cm 0cm},clip,width=0.98\textwidth]{boundary150}
-\caption{Re 150 case becomes boundary independent with a inlet radius of just over 20 diameters}
+\caption{Re 150 case becomes boundary independent with a inlet radius of just over 20 diameters.}
 \label{f:boundary150}
 \end{minipage}
 \end{figure}
@@ -247,7 +247,7 @@ While conducting the boundary independence study, it became apparent that my inl
 
 \section{Temporal/Solver Independence}
 
-With the mesh and boundary studies finished and a reasonable domain chosen, I more formally revised the temporal and solver criteria for the Re 150 case.  Again, for the Re 20 case, the solution has no oscillation, is not affected by temporal parameters, and consequently has not been included it in this section.  My time step up until now was 0.005 seconds, so I doubled it, and iteratively halved it until 0.00125 seconds.  Second order temporal time   As shown in \cref{f:timestep150}, a timestep of 0.0025 seconds became temporally independent.  On a side note, if I increased the time step above 0.01, I began to see significant numerical damping which removed the vortex shedding altogether.  
+With the mesh and boundary studies finished and a reasonable domain chosen, I more formally revisited the temporal and solver criteria for the Re 150 case.  Again, for the Re 20 case, the solution has no oscillation, is not affected by temporal parameters, and consequently is not included in this section.  My time step up until now was 0.005 seconds, so I doubled it then iteratively halved it until 0.00125 seconds.  The second order temporal time solver is being used for these simulations.  As shown in \cref{f:timestep150}, a timestep of 0.0025 seconds became temporally independent.  On a side note, if I increased the time step above 0.01, I began to see significant numerical damping which removed the vortex shedding altogether.  
 
 \Cref{f:II150} shows the results of the final condition I changed in this study, the inner iterations.  The number of inner iterations is the number of time-frozen steps the solver takes to converge between time steps.  I found that 6 was adequate and was unchanged from my original simulation.  
 
@@ -269,10 +269,10 @@ With the mesh and boundary studies finished and a reasonable domain chosen, I mo
 \end{minipage}
 \end{figure}
 
-
+\newpage
 \section{Conclusions}
 
-I was pleased with the outcomes of the study in that: First the results were quite close to real data.  Second, the trends for convergence and independency studies followed normal asymptotical trends.  Third, the final solution simulation which was deemed adequate by the studies was still simple enough to run in a reasonable amount of time.  \Cref{tab:chosen_sim} gives a brief summary of the main parameters used for the final simulation. A skeleton Star-CCM+ .sim and also an html file containing all of the simulation settings can be found at: \href{https://github.com/moore54/ME541.git}{https://github.com/moore54/ME541.git}.
+I was pleased with the outcomes of the study in that: First the results were quite close to real data.  Second, the convergence and independency studies followed normal asymptotical trends.  Third, the final solution simulation which was deemed adequate by the studies was still simple enough to run in a reasonable amount of time.  \Cref{tab:chosen_sim} gives a brief summary of the main parameters used for the final simulation. A skeleton Star-CCM+ .sim and also an html file containing all of the simulation settings can be found at: \href{https://github.com/moore54/ME541.git}{https://github.com/moore54/ME541.git}.
 
 \begin{table*}[h]
 \vspace{20pt}
@@ -299,11 +299,11 @@ I was pleased with the outcomes of the study in that: First the results were qui
   \label{tab:chosen_sim}
 \end{table*}
 
-The ending Von Karman frequency turned out to be 4.18 Hz, slightly larger than the original simulation's 4.08 Hz, and somewhat larger than the analytical 3.9 Hz.  I did find though that by decreasing the time step and increasing the number of inner iterations, the frequency was lowered slightly.  If my objective in this study was to fully and accurately resolve the wake frequency characteristics, a much more rigorous study would need to be made with experimental Von Karman wake data.
+The ending Von Karman frequency turned out to be 4.18 Hz, slightly larger than the original simulation's 4.08 Hz, and somewhat larger than the analytical 3.9 Hz.  I did find though that by decreasing the time step and increasing the number of inner iterations, the frequency was lowered slightly.  If my objective in this study was to accurately resolve the wake frequency characteristics as opposed to just the wake structure and resulting forces, a much more rigorous study would need to be made with experimental Von Karman wake data.
 
 \section{Star-CCM+ Tutorials}
 
-   While I did not complete any tutorials for this assignment I have had previous experience with Star-CCM+ and 2D incompressible flows.  The tutorials on moving reference frame and transient fan simulations would be of interest for single propeller validation studies with wake profiles in mind.  The tutorials on sound modeling could also be useful if I decide to do CFD while creating a sound model for propeller design optimization.  
+   While I did not complete any tutorials for this assignment, I have had previous experience with Star-CCM+ and 2D incompressible flows.  The tutorials on moving reference frame and transient fan simulations would be of interest for single propeller validation studies with wake profiles in mind.  Also, the tutorials on sound modeling could also be useful if I decide to do CFD while creating a sound model for propeller design optimization.  
 
 \section{Appendix A: Final Simulation Overview}
 
