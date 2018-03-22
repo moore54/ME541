@@ -1,4 +1,4 @@
-using PyPlot
+using PyPlot, Dierckx
 
 
 function gauss_sidel(aw,ap,ae,bstar,Tstar,relax)
@@ -35,6 +35,7 @@ function converge_one_timestep(N_node,Tstar,Told;ii=1,
     rho = 1,
     C_heat = 875,
     rod_L = 0.02,
+    b_thick = 0.0003,
     gamma_conv = 1,
     epsilon = 1.0,
     theta = 5.67E-8,
@@ -47,13 +48,14 @@ function converge_one_timestep(N_node,Tstar,Told;ii=1,
     node_x = []
     qw = []
     qe = []
+    dxdt = []
 
     qestar = ones(length(Tstar)-1)*1e20
     qwstar = ones(length(Tstar)-1)*1e20
 
     while true
 
-        T,node_x,qw,qe = inner_iteration(N_node,Tstar,Told;
+        T,node_x,qw,qe,dxdt = inner_iteration(N_node,Tstar,Told;
         scheme = scheme,
         h_conv = h_conv,
         u_vel = u_vel,
@@ -63,6 +65,7 @@ function converge_one_timestep(N_node,Tstar,Told;ii=1,
         rho = rho,
         C_heat = C_heat,
         rod_L = rod_L,
+        b_thick = b_thick,
         gamma_conv = gamma_conv,
         epsilon = epsilon,
         theta = theta,
@@ -92,7 +95,7 @@ function converge_one_timestep(N_node,Tstar,Told;ii=1,
             PyPlot.pause(0.1)
         end
     end
-    return T,node_x,ii
+    return T,node_x,ii,qw[1],dxdt
 end
 
 function TDMA(aw,ap,ae,b_in)
@@ -149,6 +152,7 @@ function inner_iteration(N_node,Tstar,Told;
     rho = 1,
     C_heat = 875,
     rod_L = 0.02,
+    b_thick = 0.0003,
     gamma_conv = 1,
     epsilon = 1.0,
     theta = 5.67E-8,
@@ -158,6 +162,7 @@ function inner_iteration(N_node,Tstar,Told;
 
     aw = zeros(N_node)
     ap = zeros(aw)
+    # ap0 = zeros(aw)
     ae = zeros(aw)
     b = zeros(aw)
     k = zeros(aw)
@@ -176,8 +181,8 @@ function inner_iteration(N_node,Tstar,Told;
     end
 
     for i = 1:N_node
-        Sp[i] =0#-4/D*h-16*epsilon*theta/D*Tstar[i]^3
-        Sc[i] =0#4/D*h*Tinf+12*epsilon*theta/D*Tstar[i]^4+4*epsilon*theta/D*Tinf^4
+        Sp[i] =-2/b_thick*(h_conv+4*epsilon*theta*Tstar[i]^3)
+        Sc[i] =2/b_thick*(h_conv*Tinf+epsilon*theta*(3*Tstar[i]^4+Tsur^4))
     end
 
     #-------- Apply harmonic mean --------#
@@ -189,31 +194,29 @@ function inner_iteration(N_node,Tstar,Told;
         kw_h[i+1] = node_dx[i]*k[i]*k[i+1]/(k[i]*node_dx_plus[i]+k[i+1]*node_dx_minus[i])
     end
 
-    F = rho*u_vel #TODO will likely change
-    D = gamma_conv./node_dx
-
-    pec = F./D
     #-------- Assemble the coefficients --------#
     # Apply Left BC
     aw[1] = 0
     ae[1] = 0
     ap[1] = 1
-    b[1] = 1
+    b[1] = Tb
 
     # Apply Interior Points
     for i = 2:N_node-1
         #note D indexing
-        aw[i] = D[i-1]*A_fun(pec[i-1],scheme)+max(F,0)#kw_h[i]/node_dx[i-1]
-        ae[i] = D[i+0]*A_fun(pec[i],scheme)+max(-F,0)#ke_h[i]/node_dx[i]
-        ap[i] = aw[i]+ae[i]+(F-F)-Sp[i-1]*cv_dx[i-1]
-        b[i] = Sc[i-1]*cv_dx[i-1]
+        ap0 = rho*C_heat*cv_dx[i]/delta_t #TODO: check if non-uniform spacing
+        aw[i] = kw_h[i]/node_dx[i-1]
+        ae[i] = ke_h[i]/node_dx[i]
+        ap[i] = aw[i]+ae[i]+ap0-Sp[i-1]*cv_dx[i-1]
+        b[i] = Sc[i-1]*cv_dx[i-1]+ap0*Told[i]
     end
 
     # Apply Right BC
-    aw[end] = 0
+    ap0 = rho*C_heat*cv_dx[end]/delta_t
+    aw[end] = kw_h[end]/node_dx[end-1]
     ae[end] = 0
-    ap[end] = 1
-    b[end] = 0
+    ap[end] = aw[end]+ap0-Sp[end-1]*cv_dx[end-1]
+    b[end] = Sc[end-1]*cv_dx[end-1]+ap0*Told[end]
 
     #-------- Solve the System --------#
     T = TDMA(aw,ap,ae,b)
@@ -221,10 +224,13 @@ function inner_iteration(N_node,Tstar,Told;
 
     #------- Calculate Heat Flux -------#
 
-    qw = -kw_h[2:end].*(T[2:end]-T[1:end-1])./node_dx
-    qe = -ke_h[1:end-1].*(T[2:end]-T[1:end-1])./node_dx
+    qw = -kw_h[2:end].*(T[2:end]-T[1:end-1])./node_dx - (Sc[2:end]+Sp[2:end].*T[2:end]).*cv_dx[2:end]
+    qe = -ke_h[1:end-1].*(T[2:end]-T[1:end-1])./node_dx # - (Sc+Sp*Tp)*cv_dx
 
-    return T,node_x,qw,qe
+    dxdt = (cv_dx[end]/delta_t)
+
+
+    return T,node_x,qw,qe,dxdt
 end
 
 rc("figure", figsize=(4.5, 2.6))
@@ -242,7 +248,7 @@ h_conv = [5.0,30.0]
 Tinf = 293
 Tsur = 293
 T0 = 293
-Tb = 353
+Tb_real = 353
 rod_L = 0.01
 b_thick = 0.0003
 epsilon = [0.0, 1.0]
@@ -251,88 +257,260 @@ k_in = 177
 rho = 2770
 C_heat = 875
 relax = 1.2
-delta_t = logspace(-1,-3,5)
+delta_t = logspace(-4,-6,5)
 gamma_conv = 1.0
 scheme = "upwind"
+print_time = [0.001,0.5,1.0,2.0,4.0,8.0,16.0,32.0,64.0]
+
+a_cross = 1.0*b_thick
+perim = 2*1.0+2*b_thick
 
 
 
-N_node = zeros(4)
-delta_x = zeros(N_node)
-node0 = 20.0
-for i = 1:length(N_node)
-    N_node[i] = node0*2
-    node_x = collect(linspace(0.0,rod_L,N_node[i]))
-    node_dx = node_x[2:end] - node_x[1:end-1]
-    delta_x[i] = node_dx[2]
-end
+# N_node = zeros(4)
+# delta_x = zeros(N_node)
+# node0 = 10.0
+# for i = 1:length(N_node)
+#     N_node[i] = node0*2
+#     node_x = collect(linspace(0.0,rod_L,N_node[i]))
+#     node_dx = node_x[2:end] - node_x[1:end-1]
+#     delta_x[i] = node_dx[2]
+# end
+#
+# N_node = round.(Int,N_node)
 
-N_node = round.(Int,N_node)
 
-
-iters_array = zeros(length(N_node))
+iters = []
 PyPlot.close("all")
-figname = "HW3_2_grid_conv"
+figname = "HW6_2_grid_conv"
 Tsave = []
 node_x = []
 names = []
-Esum = []
-j = 1
-k = 1
-l = 1
-m = 1
-# for m = 1:length(delta_t)
-#     for l = 1:length(N_node)
-#         for k = 1:length(epsilon)
-#             for j = 1:length(h_conv)
 
-                analy_x = linspace(0,rod_L,N_node[l])
-                Pec = rho*h_conv[j]*rod_L/gamma_conv
-                Tanalyitical = 1-(exp.(Pec*analy_x/rod_L)-1)/(exp.(Pec)-1)
-                # PyPlot.figure("$(figname)_$(h_conv[j])")
-                # PyPlot.plot(analy_x,Tanalyitical,color = color_cycle[j],label = "Analytical $(h_conv[j]) m/s")
-                time = 0:delta_t[m]:1
-                T = ones(N_node[l]+2)*T0
+# Do grid convergence on h 30 e 1
 
-                for i = 1:length(time)
+delta_t = 0.008
+N_node = 10
+N_node_old = N_node
+T = ones(N_node)*T0 # warmstart by placing this here
 
-                    Tstar = copy(T) #break the reference
-                    Told = copy(T)
-                    T,node_x,iters = converge_one_timestep(N_node[l],Tstar,Told;
-                    scheme = scheme,
-                    h_conv = h_conv[j],
-                    u_vel = h_conv[j],
-                    Tinf = Tinf,
-                    Tsur = Tsur,
-                    Tb = Tb,
-                    rho = rho,
-                    C_heat = C_heat,
-                    rod_L = rod_L,
-                    gamma_conv = gamma_conv,
-                    epsilon = epsilon[k],
-                    theta = theta,
-                    k_in = k_in,
-                    relax = relax,
-                    delta_t = delta_t)
+#Percentage change/ tolerance
+tol_d_loop = 1E-2
+tol_N_node = 1E-1
+tol_delta_t = 1E-6
+tol_time = 1E-6 #Absolute change
 
-                    push!(Tsave,T)
-                    push!(names,"V_$(h_conv[j])m/s_$delta_x[i]")
-                    # printout = [node_x,T]
-                    # println("
-                    # $(h_conv[j]) m/s, $(delta_x[i])
-                    # $(printout)
-                    #
-                    # ")
+dxdtOgoal = 1
 
-                    # PyPlot.plot(node_x,T,".",color = color_cycle[i],label = "$(delta_x[i])")
-                    # PyPlot.xlabel("Y-location")
-                    # PyPlot.ylabel(L"\phi")
-                    # PyPlot.legend(loc = "best")
-                    # PyPlot.savefig("$(figname)_$(h_conv[j]).pdf",transparent = true)
-
-                    push!(Esum, sum(abs.(Tanalyitical-T)))
-                end
-#             end
+# tic()
+# qw_save = []
+# N_node_save = []
+# delta_t_save = []
+# qw = []
+# dxdt = []
+# d_loop = 1E20
+# qw_loop_old = 1E20
+# # while d_loop>tol_d_loop #keep looping
+# println("rerun \n \n")
+# d_N_node = 1E20
+# qw_N_node_old = 1E20
+# # while d_N_node>tol_N_node # N_node
+# for jjj = 1:8
+#
+#     d_delta_t = 1E20
+#     qw_delta_t_old = 1E20
+#     # while d_delta_t>tol_delta_t # delta_t
+#     for iii = logspace(5,-3,10)
+#         delta_t = dxdtOgoal*rod_L/N_node*iii
+#         time = 0
+#         time_diff = 1E20
+#         i_print = 1
+#         Tinterp = Dierckx.Spline1D(linspace(0,rod_L,N_node_old),T)
+#         T = Tinterp(linspace(0,rod_L,N_node))
+#         while time_diff > tol_time
+#
+#             time+=delta_t
+#
+#             Tstar = copy(T) #break the reference
+#             Told = copy(T)
+#             T,node_x,iters,qw,dxdt = converge_one_timestep(N_node,Tstar,Told;
+#             scheme = scheme,
+#             h_conv = h_conv[2],
+#             u_vel = h_conv[2],
+#             Tinf = Tinf,
+#             Tsur = Tsur,
+#             Tb = Tb_real,
+#             rho = rho,
+#             C_heat = C_heat,
+#             rod_L = rod_L,
+#             b_thick = b_thick,
+#             gamma_conv = gamma_conv,
+#             epsilon = epsilon[2],
+#             theta = theta,
+#             k_in = k_in,
+#             relax = relax,
+#             delta_t = delta_t)
+#
+#             push!(Tsave,T)
+#
+#
+#             # PyPlot.savefig("$(figname)_$(h_conv[j]).pdf",transparent = true)
+#             time_diff = sum(abs.(Told-T))
+#
 #         end
+#
+#         push!(qw_save,qw)
+#         push!(N_node_save,N_node)
+#         push!(delta_t_save,delta_t)
+#
+#         N_node_old = N_node
+#         d_delta_t = abs.((qw-qw_delta_t_old)/qw)*100
+#         qw_delta_t_old = qw
+#
+#         # println(qw)
+#         println(dxdt)
+#
+#         # if d_delta_t > tol_delta_t
+#         #     delta_t = delta_t/1.25
+#         #     # println("delta_t $delta_t")
+#         # else
+#         # println("move on")
 #     end
+#
+#
+#
+#     d_N_node = abs.((qw-qw_N_node_old)/qw)*100
+#     qw_N_node_old = qw
+#     # if d_N_node > tol_N_node
+#     N_node = N_node*2
+#     N_node = round(Int,N_node)
+#     # println("Node $N_node \n")
+#     # else
+#     # println("move on")
+#     # end
+#     println()
 # end
+#
+# d_loop = abs.((qw-qw_loop_old)/qw)*100
+# qw_loop_old = qw
+# # end
+# toc()
+#
+# figname = "qw_base"
+# PyPlot.figure("qw_base")
+# PyPlot.plot3D(delta_t_save,N_node_save,round.(qw_save/1e6,3),".")
+# PyPlot.xlabel("delta t (s)")
+# PyPlot.ylabel("Nodes (#)")
+# PyPlot.zlabel("q\" (1E6)")
+# PyPlot.savefig(figname,transparent = true)
+#
+# figname = "qw_base2D_nodes"
+# PyPlot.figure("qw_base2D_nodes")
+# PyPlot.plot(N_node_save,qw_save/1e6,".")
+# PyPlot.xlabel("Nodes (#)")
+# PyPlot.ylabel("q\" (1E6)")
+# PyPlot.savefig(figname,transparent = true)
+#
+#
+# figname = "qw_base2D_delta_t"
+# PyPlot.figure("qw_base2D_delta_t")
+# PyPlot.semilogx(delta_t_save,qw_save/1e6,".")
+# PyPlot.xlabel("delta t (s)")
+# PyPlot.ylabel("q\" (1E6)")
+# PyPlot.savefig(figname,transparent = true)
+
+
+N_node = 320
+dx = rod_L/N_node
+delta_t = dxdtOgoal*rod_L/N_node
+
+# PyPlot.zlim(minimum(qw_save/1e6), minimum(qw_save/1e6)*1.01)
+
+# PyPlot.legend(loc = "best")
+
+Tsave = []
+node_x = []
+names = []
+
+for k = 1:length(epsilon)
+    for j = 1:length(h_conv)
+
+        analy_x = linspace(0,rod_L,N_node)
+        mcoeff = sqrt(h_conv[j]*perim/(k_in*a_cross))
+        Tanalyitical = cosh.(mcoeff*(rod_L-analy_x))/cosh.(mcoeff*rod_L)*(Tb_real-Tinf)+Tinf
+        PyPlot.figure("$(figname)_$(h_conv[j])_$(epsilon[k])")
+        PyPlot.plot(analy_x,Tanalyitical,color = color_cycle[j],label = "Analytical $(h_conv[j]) m/s")
+        time = 0
+        Esum = []
+        qw_save = []
+        T = ones(N_node)*T0
+
+        # PyPlot.plot(linspace(0,rod_L,length(T)),T,".",label = "t 0.0-")
+        max_diff = 1E20
+        i_print = 1
+        while max_diff > 1e-6
+        #for i = 1:length(time)
+        time+=delta_t
+
+            Tstar = copy(T) #break the reference
+            Told = copy(T)
+            T,node_x,iters,qw = converge_one_timestep(N_node,Tstar,Told;
+            scheme = scheme,
+            h_conv = h_conv[j],
+            u_vel = h_conv[j],
+            Tinf = Tinf,
+            Tsur = Tsur,
+            Tb = Tb_real,
+            rho = rho,
+            C_heat = C_heat,
+            rod_L = rod_L,
+            b_thick = b_thick,
+            gamma_conv = gamma_conv,
+            epsilon = epsilon[k],
+            theta = theta,
+            k_in = k_in,
+            relax = relax,
+            delta_t = delta_t)
+
+            push!(Tsave,T)
+            push!(qw_save,qw)
+
+            # PyPlot.savefig("$(figname)_$(h_conv[j]).pdf",transparent = true)
+            max_diff = maximum(abs.(Told-T))
+            push!(Esum, maximum(abs.(Tanalyitical-T)))
+
+            if max_diff < 1e-6#time%print_time[i_print]<delta_t && time%print_time[i_print]>-delta_t
+                i_print+=1
+                PyPlot.plot(node_x,T,".",label = "t $(round(time,3))")
+                PyPlot.xlabel("Y-location")
+                PyPlot.ylabel("T")
+                PyPlot.legend(loc = "best")
+            end
+
+
+        end
+
+        rc("figure", figsize=(6.5, 2.6))
+        rc("figure.subplot", left=0.18, bottom=0.18, top=0.97, right=0.72)
+        PyPlot.plot(node_x,T,".",label = "t $(round(time,3))")
+        PyPlot.xlabel("Y-location")
+        PyPlot.ylabel("T")
+        PyPlot.legend(loc="lower left", bbox_to_anchor=(1, 0.5))
+
+        rc("figure", figsize=(4.5, 2.6))
+        rc("figure.subplot", left=0.18, bottom=0.18, top=0.97, right=0.92)
+        PyPlot.figure("error")
+        PyPlot.semilogy(0:delta_t:time,Esum,"-",label = "$(h_conv[j])_$(epsilon[k])")
+        PyPlot.xlabel("t (s)")
+        PyPlot.ylabel("Maximum Steady State Error")
+        PyPlot.legend(loc = "best")
+
+        PyPlot.figure("qw_base")
+        PyPlot.semilogy(0:delta_t:time,qw_save,"-",label = "$(h_conv[j])_$(epsilon[k])")
+        PyPlot.xlabel("t (s)")
+        PyPlot.ylabel("Base Heat Transfer (q\")")
+        PyPlot.legend(loc = "best")
+
+        # push!(names,"V_$(h_conv[j])m/s_$delta_x[i]")
+    end
+end
