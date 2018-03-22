@@ -35,7 +35,7 @@ function converge_one_timestep(N_node,Tstar,Told;ii=1,
     rho = 1,
     C_heat = 875,
     rod_L = 0.02,
-    gamma = 1,
+    gamma_conv = 1,
     epsilon = 1.0,
     theta = 5.67E-8,
     k_in = 401,
@@ -63,7 +63,7 @@ function converge_one_timestep(N_node,Tstar,Told;ii=1,
         rho = rho,
         C_heat = C_heat,
         rod_L = rod_L,
-        gamma = gamma,
+        gamma_conv = gamma_conv,
         epsilon = epsilon,
         theta = theta,
         k_in = k_in,
@@ -149,7 +149,7 @@ function inner_iteration(N_node,Tstar,Told;
     rho = 1,
     C_heat = 875,
     rod_L = 0.02,
-    gamma = 1,
+    gamma_conv = 1,
     epsilon = 1.0,
     theta = 5.67E-8,
     k_in = 401,
@@ -190,7 +190,7 @@ function inner_iteration(N_node,Tstar,Told;
     end
 
     F = rho*u_vel #TODO will likely change
-    D = gamma./node_dx
+    D = gamma_conv./node_dx
 
     pec = F./D
     #-------- Assemble the coefficients --------#
@@ -252,7 +252,7 @@ rho = 2770
 C_heat = 875
 relax = 1.2
 delta_t = logspace(-1,-3,5)
-gamma = 1.0
+gamma_conv = 1.0
 scheme = "upwind"
 
 
@@ -267,6 +267,7 @@ for i = 1:length(N_node)
     delta_x[i] = node_dx[2]
 end
 
+N_node = round.(Int,N_node)
 
 
 iters_array = zeros(length(N_node))
@@ -285,8 +286,8 @@ m = 1
 #         for k = 1:length(epsilon)
 #             for j = 1:length(h_conv)
 
-                analy_x = linspace(0,rod_L,21)
-                Pec = rho*h_conv[j]*rod_L/gamma
+                analy_x = linspace(0,rod_L,N_node[l])
+                Pec = rho*h_conv[j]*rod_L/gamma_conv
                 Tanalyitical = 1-(exp.(Pec*analy_x/rod_L)-1)/(exp.(Pec)-1)
                 # PyPlot.figure("$(figname)_$(h_conv[j])")
                 # PyPlot.plot(analy_x,Tanalyitical,color = color_cycle[j],label = "Analytical $(h_conv[j]) m/s")
@@ -307,7 +308,7 @@ m = 1
                     rho = rho,
                     C_heat = C_heat,
                     rod_L = rod_L,
-                    gamma = gamma,
+                    gamma_conv = gamma_conv,
                     epsilon = epsilon[k],
                     theta = theta,
                     k_in = k_in,
