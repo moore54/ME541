@@ -20,7 +20,7 @@ rho = 1000
 mu = 0.001
 u_relax = 0.5
 v_relax = 0.5
-p_relax = 0.5
+p_relax = 1.0
 
 
 # + 1 since we have ghost cells of 0 value
@@ -78,8 +78,8 @@ println("u_vel")
 
 A_mat = zeros((length(u_x)-2)*(length(u_y)-2),(length(u_x)-2)*(length(u_y)-2))
 b_arr = zeros(length(A_mat[:,1]))
-Ai1J = zeros(b_arr)
-AiJ = zeros(b_arr)
+Ap_u = zeros(b_arr)
+
 
 Ae = 0.0
 Aw = 0.0
@@ -178,8 +178,7 @@ for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
     #Record b and values that will be used in the pressure correction
     b_arr[k] = b_con
 
-    Ai1J[k] = Ae
-    AiJ[k] = Ap
+    Ap_u[k] = Ap
 
     # Increment indices
     i+=1
@@ -224,8 +223,7 @@ println("v_vel")
 
 A_mat = zeros((length(v_x)-1)*(length(v_y)-2),(length(v_x)-1)*(length(v_y)-2))
 b_arr = zeros(length(A_mat[:,1]))
-AIj1 = zeros(b_arr)
-AIj = zeros(b_arr)
+Ap_v = zeros(b_arr)
 
 Ae = 0.0
 Aw = 0.0
@@ -322,8 +320,7 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
 
     b_arr[k] = b_con
 
-    AIj1[k] = An
-    AIj[k] = Ap
+    Ap_v[k] = Ap
 
     # Increment indices
     i+=1
@@ -355,131 +352,113 @@ end
 #
 #
 println("pressure")
-#
-# A_mat = zeros((length(P_x)-2)*(length(P_y)-2),(length(P_x)-2)*(length(P_y)-2))
-# b_arr = zeros(length(A_mat[:,1]))
-#
-# Ae = 0.0
-# Aw = 0.0
-# An = 0.0
-# As = 0.0
-# Ap = 0.0
-# b_con = 0.0
-#
-# j = 1+1 # x position
-# i = 1+1 # y position + 1 since we have ghost cells of 0 value
-# for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-2)
-#     # k = 2
-#     # j = 2+1
-#
-#     # Apply inlet index update
-#     if k==(length(P_val[1,:])-2)*(j-1)+1
-#         j+=1
-#         i=1+1
-#     end
-#
-#     # if k==(length(P_val[1,:])-2)*(j-1)
-#     #     #Apply outlet conditions
-#     #     Ae = 0.0
-#     #     Aw = 0.0
-#     #     An = 0.0
-#     #     As = 0.0
-#     #     Ap = 1.0
-#     #     b_con = 0.0
-#     # end
-#
-#     A1 = v_y[j+1] - v_y[j]
-#     A2 = v_y[j+1] - v_y[j]
-#     A3 = u_x[i+1] - u_x[i]
-#     A4 = u_x[i+1] - u_x[i]
-#
-#     if Ai1J[k] == 0.0
-#         d1 = 0.0
-#     else
-#         d1 = A1*u_relax/Ai1J[k]
-#     end
-#     if AiJ[k] == 0.0
-#         d2 = 0.0
-#     else
-#         d2 = A2*u_relax/AiJ[k]
-#     end
-#     if AIj1[k] == 0.0
-#         d3 = 0.0
-#     else
-#         d3 = A3*u_relax/AIj1[k]
-#     end
-#     if AIj[k] == 0.0
-#         d4 = 0.0
-#     else
-#         d4 = A4*u_relax/AIj[k]
-#     end
-#
-#     Ae = rho*d1*A1
-#     Aw = rho*d2*A2
-#     An = rho*d3*A3
-#     As = rho*d4*A4
-#     Ap = Ae+Aw+An+As
-#     b_con = rho*u_val[j,i]*A2 - rho*u_val[j,i+1]*A1 - rho*v_val[j,i]*A4 - rho*v_val[j+1,i]*A3
-#
-#     if j==2
-#         #Apply Bottom Wall Conditions
-#         Ap = Ap - As
-#         As = 0.0
-#
-#     elseif j==(length(P_val[:,1])-1)
-#         #Apply Top Wall Conditions
-#         Ap = Ap - An
-#         An = 0.0
-#     end
-#
-#
-#     if k-(length(P_val[1,:])-2)>0
-#         A_mat[k,k-(length(P_val[1,:])-2)] = -As
-#     end
-#
-#     if k-1>0
-#         A_mat[k,k-1] = -Aw
-#     end
-#
-#     A_mat[k,k] = Ap
-#
-#     if k+1<=(length(P_val[:,1])-2)*(length(P_val[1,:])-2)
-#         A_mat[k,k+1] = -Ae
-#     end
-#
-#     if k+(length(P_val[1,:])-2)<=(length(P_val[:,1])-2)*(length(P_val[1,:])-2)
-#         A_mat[k,k+(length(P_val[1,:])-2)] = -An
-#     end
-#
-#     b_arr[k] = b_con
-#
-#     i+=1
-#     println(A_mat[k,:])
+
+A_mat = zeros((length(P_x)-3)*(length(P_y)-2),(length(P_x)-3)*(length(P_y)-2))
+b_arr = zeros(length(A_mat[:,1]))
+
+Ae = 0.0
+Aw = 0.0
+An = 0.0
+As = 0.0
+Ap = 0.0
+b_con = 0.0
+
+j = 1+1 # x position
+i = 1+1 # y position + 1 since we have ghost cells of 0 value
+for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
+    # k = 2
+    # j = 2+1
+
+    ae = v_y[j+1] - v_y[j]
+    aw = v_y[j+1] - v_y[j]
+    an = u_x[i+1] - u_x[i]
+    as = u_x[i+1] - u_x[i]
+
+    if Ap_u[k+1] == 0.0
+        de = 0.0
+    else
+        de = ae*p_relax/Ap_u[k+1]
+    end
+    if Ap_u[k] == 0.0
+        dw = 0.0
+    else
+        dw = aw*p_relax/Ap_u[k]
+    end
+    if Ap_v[k+(length(v_val[1,:])-1)] == 0.0 #TODO: north tricky
+        dn = 0.0
+    else
+        dn = an*p_relax/Ap_u[k+(length(v_val[1,:])-1)]
+    end
+    if Ap_v[k] == 0.0
+        ds = 0.0
+    else
+        ds = as*p_relax/Ap_v[k]
+    end
+
+    Ae = rho*de*ae
+    Aw = rho*dw*aw
+    An = rho*dn*an
+    As = rho*ds*as
+    Ap = Ae+Aw+An+As
+    # Ap = Ap/p_relax
+    b_con = rho*u_val[j,i]*aw - rho*u_val[j,i+1]*ae + rho*v_val[j,i]*as - rho*v_val[j+1,i]*an
+
+
+    # Assemble A matrix
+    if k-(length(P_val[1,:])-3)>0
+        A_mat[k,k-(length(P_val[1,:])-3)] = -As
+    end
+
+    if k-1>0
+        A_mat[k,k-1] = -Aw
+    end
+
+    A_mat[k,k] = Ap
+
+    if k+1<=(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
+        A_mat[k,k+1] = -Ae
+    end
+
+    if k+(length(P_val[1,:])-3)<=(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
+        A_mat[k,k+(length(P_val[1,:])-3)] = -An
+    end
+
+    b_arr[k] = b_con
+
+
+    i+=1
+    # Apply inlet index update
+    if k==(length(P_val[1,:])-3)*(j-1)+1
+        j+=1
+        i=1+1
+    end
+
+    println(A_mat[k,:])
+end
+println("b_arr")
+println(b_arr)
+# Solve for the P correction
+p_cor_new = A_mat\b_arr
+
+# Reassemble p_cor_new to correct dimensions
+p_cor = zeros(P_val)
+j = 1
+for i = 1:length(P_val[:,1])-2
+    p_cor[i+1,2:end-2] = p_cor_new[j:j+length(p_cor[1,:])-4]
+    j=j+length(p_cor[1,:])-3
+end
+
+P_val = P_val+p_relax*p_cor
+
+resid = norm(p_cor)
+iter+=1
+
+# if iter%100==0 || iter == 1
+    # println(u_val)
+    PyPlot.clf()
+    CS = PyPlot.contour(X,Y,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:gray])
+    PyPlot.clabel(CS)
+    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    PyPlot.pause(2.0)
 # end
-# println("b_arr")
-# println(b_arr)
-# # Solve for the P correction
-# P_cor_new = A_mat\b_arr
-#
-# # Reassemble P_cor_new to correct dimensions
-# P_cor = zeros(P_val)
-# j = 1
-# for i = 1:length(P_val[:,1])-2
-#     P_cor[i+1,2:end-1] = P_cor_new[j:j+length(P_cor[1,:])-3]
-#     j=j+length(P_cor[1,:])-2
 # end
-#
-# P_val = P_val+p_relax*P_cor
-#
-# resid = norm(P_cor)
-# iter+=1
-#
-# # if iter%100==0 || iter == 1
-#     # println(u_val)
-#     PyPlot.clf()
-#     CS = PyPlot.contour(X,Y,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:gray])
-#     PyPlot.clabel(CS)
-#     # PyPlot.colorbar(orientation = "horizontal",extend = "both")
-#     PyPlot.pause(2.0)
-# # end
-# # end
