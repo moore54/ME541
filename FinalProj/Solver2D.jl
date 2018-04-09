@@ -37,22 +37,22 @@ X,Y=meshgrid(u_x,u_y)
 
 # include ghost cells of 0 value
 P_val = ones(length(P_y),length(P_x))*P0
-P_val[:,1] = 0.0 # outside domain
-P_val[:,end] = 0.0
-P_val[1,:] = 0.0
-P_val[end,:] = 0.0
+# P_val[:,1] = 0.0 # outside domain
+# P_val[:,end] = 0.0
+# P_val[1,:] = 0.0
+# P_val[end,:] = 0.0
 
 u_val = ones(length(u_y),length(u_x))*U0
-u_val[:,1] = 0.0
-u_val[:,end] = 0.0
-u_val[1,:] = 0.0
-u_val[end,:] = 0.0
+# u_val[:,1] = 0.0
+# u_val[:,end] = 0.0
+# u_val[1,:] = 0.0
+# u_val[end,:] = 0.0
 
 v_val = ones(length(v_y),length(v_x))*V0
-v_val[:,end] = 0.0
-v_val[:,1] = 0.0
-v_val[1,:] = 0.0
-v_val[end,:] = 0.0
+# v_val[:,end] = 0.0
+# v_val[:,1] = 0.0
+# v_val[1,:] = 0.0
+# v_val[end,:] = 0.0
 
 # plot(P_x,ones(P_x)*P_y[1],"x",label = "Pressure X Nodes")
 # plot(ones(P_y)*P_x[1],P_y,"x",label = "Pressure Y Nodes")
@@ -101,7 +101,7 @@ for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
         An = 0.0
         As = 0.0
         Ap = 1.0
-        b_con = V0
+        b_con = U0
 
     elseif k==(length(u_val[1,:])-2)*(j-1)
         #Apply outlet conditions
@@ -134,27 +134,29 @@ for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
         Fns = (Fn-Fs)*(v_x[i+1]-v_x[i])
 
         Ap = Ae+Aw+An+As+ Few + Fns
+
+
+        #Apply bottom wall boundary conditions but not on inlet or outlet
+        if j==2 && (k!=(length(u_val[1,:])-2)*(j-1)+1 && k!=1 && k!=(length(u_val[1,:])-2)*(j-1))
+            Ap += mu/(u_y[j]-Bot_pos)*(v_x[i]-v_x[i-1]) - As
+            As = 0.0
+            # println("bottom wall")
+
+        #Apply top wall boundary conditions but not on inlet or outlet
+        elseif j == (length(u_val[:,1])-1) && (k!=(length(u_val[1,:])-2)*(j-1)+1 && k!=1 && k!=(length(u_val[1,:])-2)*(j-1))
+            Ap += mu/(Top_pos-u_y[j])*(v_x[i]-v_x[i-1]) - An
+            An = 0.0
+            # println("top wall")
+        end
+
         Ap = Ap/u_relax
 
-        b_con = (P_val[j,i-1]-P_val[j,i])*(v_y[j+1]-v_y[j]) + 0.0 + (1-u_relax)*Ap/u_relax*u_val[j,i]
-
-    end
-
-    #Apply bottom wall boundary conditions but not on inlet or outlet
-    if j==2 && (k!=(length(u_val[1,:])-2)*(j-1)+1 || k!=1 || k!=(length(u_val[1,:])-2)*(j-1))
-        Ap += mu/(u_y[j]-Bot_pos)*(v_x[i+1]-v_x[i]) - As
-        As = 0.0
-
-    #Apply top wall boundary conditions but not on inlet or outlet
-    elseif j == (length(u_val[:,1])-1) && (k!=(length(u_val[1,:])-2)*(j-1)+1 || k!=1 || k!=(length(u_val[1,:])-2)*(j-1))
-        Ap += mu/(Top_pos-u_y[j])*(v_x[i+1]-v_x[i]) - An
-        An = 0.0
+        b_con = (P_val[j,i-1]-P_val[j,i])*(v_y[j+1]-v_y[j]) + 0.0 + (1-u_relax)*Ap*u_val[j,i]
 
     end
 
 
-
-
+    #Assemble A matrix
     if k-(length(u_val[1,:])-2)>0
         A_mat[k,k-(length(u_val[1,:])-2)] = -As
     end
@@ -173,6 +175,7 @@ for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
         A_mat[k,k+(length(u_val[1,:])-2)] = -An
     end
 
+    #Record b and values that will be used in the pressure correction
     b_arr[k] = b_con
 
     Ai1J[k] = Ae
@@ -203,9 +206,10 @@ end
 
 
 # Apply mass flowrate correction
-Mout = sum(u_val[:,end-1])
-Min = sum(u_val[:,2])
-u_val[:,end-1] = u_val[:,end-2]*Min/Mout
+Mout = sum(u_val[2:end-1,end-1])
+Min = sum(u_val[2:end-1,2])
+Min/Mout
+u_val[2:end-1,end-1] = u_val[2:end-1,end-2]*Min/Mout
 
 println("v_vel")
 #
@@ -278,26 +282,28 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
         Fns = (Fn-Fs)*(v_x[i+1]-v_x[i])
 
         Ap = Ae+Aw+An+As+ Few + Fns
+
         Ap = Ap/v_relax
 
-        b_con = (P_val[j-1,i]-P_val[j,i])*(u_x[i+1]-u_x[i]) + 0.0 + (1-v_relax)*Ap/v_relax*v_val[j,i]
+        b_con = (P_val[j-1,i]-P_val[j,i])*(u_x[i+1]-u_x[i]) + 0.0 + (1-v_relax)*Ap*v_val[j,i]
 
-    end
+        #Apply Top and Bottom Wall Conditions
+        if j==2 || j==(length(v_val[:,1])-1) && (k!=(length(v_val[1,:])-1)*(j-1)+1 && k!=1 && k!=(length(v_val[1,:])-1)*(j-1))
+            Ae = 0.0
+            Aw = 0.0
+            An = 0.0
+            As = 0.0
+            Ap = 1.0
+            b_con = 0.0
+            # println("wall")
+        end
 
-    #Apply Top and Bottom Wall Conditions
-    if j==2 || j==(length(v_val[:,1])-1) && (k!=(length(v_val[1,:])-1)*(j-1)+1 || k!=1 || k!=(length(v_val[1,:])-1)*(j-1))
-        Ae = 0.0
-        Aw = 0.0
-        An = 0.0
-        As = 0.0
-        Ap = 1.0
-        b_con = 0.0
-        # println("wall")
+
     end
 
 
     if k-(length(v_val[1,:])-1)>0
-        A_mat[k,k-(length(v_val[1,:])-2)] = -As
+        A_mat[k,k-(length(v_val[1,:])-1)] = -As
     end
 
     if k-1>0
@@ -311,7 +317,7 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
     end
 
     if k+(length(v_val[1,:])-1)<=(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
-        A_mat[k,k+(length(v_val[1,:])-2)] = -An
+        A_mat[k,k+(length(v_val[1,:])-1)] = -An
     end
 
     b_arr[k] = b_con
@@ -337,18 +343,18 @@ v_val_new = A_mat\b_arr
 # Reassemble u_val_new to correct dimensions
 j = 1
 for i = 1:length(v_val[:,1])-2
-    v_val[i+1,2:end-1] = v_val_new[j:j+length(v_val[1,:])-3]
-    j=j+length(v_val[1,:])-2
+    v_val[i+1,2:end] = v_val_new[j:j+length(v_val[1,:])-2]
+    j=j+length(v_val[1,:])-1
 end
 
-# #
-# #
-# #
-# #--------- 3) Pressure --------#
-# #
-# #
-# #
-# println("pressure")
+#
+#
+#
+#--------- 3) Pressure --------#
+#
+#
+#
+println("pressure")
 #
 # A_mat = zeros((length(P_x)-2)*(length(P_y)-2),(length(P_x)-2)*(length(P_y)-2))
 # b_arr = zeros(length(A_mat[:,1]))
