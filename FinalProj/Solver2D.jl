@@ -54,13 +54,13 @@ v_val = ones(length(v_y),length(v_x))*V0
 # v_val[1,:] = 0.0
 # v_val[end,:] = 0.0
 
-# plot(P_x,ones(P_x)*P_y[1],"x",label = "Pressure X Nodes")
-# plot(ones(P_y)*P_x[1],P_y,"x",label = "Pressure Y Nodes")
-# plot(u_x,ones(u_x)*u_y[1],".",label = "u X Nodes")
-# plot(ones(u_y)*u_x[1],u_y,".",label = "u Y Nodes")
-# plot(v_x,ones(v_x)*v_y[1],"*",label = "v X Nodes")
-# plot(ones(v_y)*v_x[1],v_y,"*",label = "v Y Nodes")
-# legend(loc = "best")
+plot(P_x,ones(P_x)*P_y[1],"x",label = "Pressure X Nodes")
+plot(ones(P_y)*P_x[1],P_y,"x",label = "Pressure Y Nodes")
+plot(u_x,ones(u_x)*u_y[1],".",label = "u X Nodes")
+plot(ones(u_y)*u_x[1],u_y,".",label = "u Y Nodes")
+plot(v_x,ones(v_x)*v_y[1],"*",label = "v X Nodes")
+plot(ones(v_y)*v_x[1],v_y,"*",label = "v Y Nodes")
+legend(loc = "best")
 
 resid = 1E20
 iter = 1
@@ -74,7 +74,7 @@ figure("u_contour")
 #
 #
 #
-println("u_vel")
+# println("u_vel")
 
 A_mat = zeros((length(u_x)-2)*(length(u_y)-2),(length(u_x)-2)*(length(u_y)-2))
 b_arr = zeros(length(A_mat[:,1]))
@@ -188,10 +188,10 @@ for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
         i=1+1
     end
 
-    println(A_mat[k,:])
+    # println(A_mat[k,:])
 end
-println("b_arr")
-println(b_arr)
+# println("b_arr")
+# println(b_arr)
 
 # Solve for the u_velocity
 u_val_new = A_mat\b_arr
@@ -210,7 +210,7 @@ Min = sum(u_val[2:end-1,2])
 Min/Mout
 u_val[2:end-1,end-1] = u_val[2:end-1,end-2]*Min/Mout
 
-println("v_vel")
+# println("v_vel")
 #
 #
 #
@@ -285,7 +285,7 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
 
         b_con = (P_val[j-1,i]-P_val[j,i])*(u_x[i+1]-u_x[i]) + 0.0 + (1-v_relax)*Ap*v_val[j,i]
 
-        #Apply Top and Bottom Wall Conditions
+        #Apply Top and Bottom Wall Conditions, but not on inlet or outlet
         if j==2 || j==(length(v_val[:,1])-1) && (k!=(length(v_val[1,:])-1)*(j-1)+1 && k!=1 && k!=(length(v_val[1,:])-1)*(j-1))
             Ae = 0.0
             Aw = 0.0
@@ -329,10 +329,10 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
         i=1+1
     end
 
-    println(A_mat[k,:])
+    # println(A_mat[k,:])
 end
-println("b_arr")
-println(b_arr)
+# println("b_arr")
+# println(b_arr)
 
 # Solve for the v_velocity
 v_val_new = A_mat\b_arr
@@ -348,6 +348,7 @@ end
 #
 #
 #--------- 3) Pressure --------#
+# Set last column to 0 and don't solve for it, so if 4x4 pressure nodes, solving for 4x3
 #
 #
 #
@@ -355,6 +356,8 @@ println("pressure")
 
 A_mat = zeros((length(P_x)-3)*(length(P_y)-2),(length(P_x)-3)*(length(P_y)-2))
 b_arr = zeros(length(A_mat[:,1]))
+dw_save = zeros(length(A_mat[:,1]))
+ds_save = zeros(length(A_mat[:,1]))
 
 Ae = 0.0
 Aw = 0.0
@@ -365,6 +368,7 @@ b_con = 0.0
 
 j = 1+1 # x position
 i = 1+1 # y position + 1 since we have ghost cells of 0 value
+
 for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     # k = 2
     # j = 2+1
@@ -374,33 +378,44 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     an = u_x[i+1] - u_x[i]
     as = u_x[i+1] - u_x[i]
 
-    if Ap_u[k+1] == 0.0
-        de = 0.0
-    else
-        de = ae*p_relax/Ap_u[k+1]
-    end
-    if Ap_u[k] == 0.0
-        dw = 0.0
-    else
-        dw = aw*p_relax/Ap_u[k]
-    end
-    if Ap_v[k+(length(v_val[1,:])-1)] == 0.0 #TODO: north tricky
-        dn = 0.0
-    else
-        dn = an*p_relax/Ap_u[k+(length(v_val[1,:])-1)]
-    end
-    if Ap_v[k] == 0.0
-        ds = 0.0
-    else
-        ds = as*p_relax/Ap_v[k]
-    end
+# println(k)
+# println(j)
+# println(k+1+(j-2)*2)
+    de = ae/Ap_u[k+1+(j-2)*2] # u_relax already applied, don't double apply
+    dw = aw/Ap_u[k+(j-2)*2]
+    dn = an/Ap_v[k+1+(length(v_val[1,:])-1)+(j-2)*3]
+    ds = as/Ap_v[k+1+(j-2)*3]
 
     Ae = rho*de*ae
     Aw = rho*dw*aw
     An = rho*dn*an
     As = rho*ds*as
+
+
+
     Ap = Ae+Aw+An+As
-    # Ap = Ap/p_relax
+
+    #Apply Top and Bottom Wall Conditions
+    if j==2
+        As = 0.0
+        # println("bottom")
+    elseif  j==(length(P_val[:,1])-1)
+        An = 0.0
+        # println("top")
+    end
+
+
+    if k==(length(P_val[1,:])-3)*(j-2)+1 || k==1
+        # Apply inlet condition
+        Aw = 0.0
+        # println("inlet")
+    elseif k==(length(P_val[1,:])-3)*(j-1)
+        #Apply outlet conditions
+        Ae = 0.0
+        # println("outlet")
+    end
+
+
     b_con = rho*u_val[j,i]*aw - rho*u_val[j,i+1]*ae + rho*v_val[j,i]*as - rho*v_val[j+1,i]*an
 
 
@@ -424,32 +439,45 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     end
 
     b_arr[k] = b_con
-
+    dw_save[k] = dw
+    ds_save[k] = ds
 
     i+=1
     # Apply inlet index update
-    if k==(length(P_val[1,:])-3)*(j-1)+1
+    if k==(length(P_val[1,:])-3)*(j-1) && k!=1
+        # println("inlet")
         j+=1
         i=1+1
     end
 
-    println(A_mat[k,:])
+    # println(round.(A_mat[k,:],3))
 end
-println("b_arr")
-println(b_arr)
+# println("b_arr")
+# println(b_arr)
 # Solve for the P correction
 p_cor_new = A_mat\b_arr
 
 # Reassemble p_cor_new to correct dimensions
 p_cor = zeros(P_val)
+dw_n = zeros(P_val)
+ds_n = zeros(P_val)
 j = 1
 for i = 1:length(P_val[:,1])-2
     p_cor[i+1,2:end-2] = p_cor_new[j:j+length(p_cor[1,:])-4]
+    dw_n[i+1,2:end-2] = dw_save[j:j+length(p_cor[1,:])-4]
+    ds_n[i+1,2:end-2] = ds_save[j:j+length(p_cor[1,:])-4]
     j=j+length(p_cor[1,:])-3
 end
 
 P_val = P_val+p_relax*p_cor
 
+for j = 1:length(u_val[:,1])-2
+u_val[j,3:end-2] = u_val[j,3:end-2]+dw_n[j,2:end-2].*(p_cor[j,2:end-2]-p_cor[j,3:end-1])
+end
+
+for i = 1:length(v_val[1,:])-2
+    v_val[3:end-2,i] = v_val[3:end-2,i]+ds_n[2:end-2,i].*(p_cor[2:end-2,i]-p_cor[3:end-1,i])
+end
 resid = norm(p_cor)
 iter+=1
 
