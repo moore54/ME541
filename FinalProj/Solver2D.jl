@@ -20,7 +20,7 @@ rho = 1000
 mu = 0.001
 u_relax = 0.5
 v_relax = 0.5
-p_relax = 0.5
+p_relax = 0.0
 
 
 # + 1 since we have ghost cells of 0 value
@@ -404,10 +404,10 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
         # Apply inlet condition
         dw = aw/Ap_u[k+(j-2)*2]/2.0
         # aw = aw/2.0
-    # elseif k==(length(P_val[1,:])-3)*(j-1)
-    #     #Apply outlet conditions
-    #     de = ae/Ap_u[k+1+(j-2)*2]/2.0
-    #     # ae = ae/2.0
+    elseif k==(length(P_val[1,:])-3)*(j-1)
+        #Apply outlet conditions
+        # de = de/2.0
+        # ae = ae/2.0
     end
 
     # println(de)
@@ -441,10 +441,10 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
         Aw = 0.0
         # aw = aw/2
         # println("inlet")
-    # elseif k==(length(P_val[1,:])-3)*(j-1) # We aren't calculating outlet
-    #     #Apply outlet conditions
-    #     Ae = 0.0
-    #     # println("outlet")
+    elseif k==(length(P_val[1,:])-3)*(j-1) # We aren't calculating outlet
+        #Apply outlet conditions
+        Ae = 0.0
+        # println("outlet")
     end
 
 
@@ -501,24 +501,24 @@ for i = 1:length(P_val[:,1])-2
     j=j+length(p_cor[1,:])-3
 end
 
-# P_val = P_val+p_relax*p_cor
-#
-# for j = 1:length(u_val[:,1])-2
-# u_val[j,3:end-2] = u_val[j,3:end-2]+dw_n[j,2:end-2].*(p_cor[j,2:end-2]-p_cor[j,3:end-1])
+P_val = P_val+p_relax*p_cor
+
+for j = 2:length(u_val[:,1])-1
+u_val[j,3:end-2] = u_val[j,3:end-2]+dw_n[j,3:end-1].*(p_cor[j,2:end-2]-p_cor[j,3:end-1])
+end
+
+for i = 1:length(v_val[1,:])-2
+    v_val[3:end-2,i] = v_val[3:end-2,i]+ds_n[2:end-2,i].*(p_cor[2:end-2,i]-p_cor[3:end-1,i])
+end
+resid = norm(p_cor)
+iter+=1
+
+# if iter%100==0 || iter == 1
+    # println(u_val)
+    PyPlot.clf()
+    CS = PyPlot.contour(X,Y,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:gray])
+    PyPlot.clabel(CS)
+    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    PyPlot.pause(0.00005)
 # end
-#
-# for i = 1:length(v_val[1,:])-2
-#     v_val[3:end-2,i] = v_val[3:end-2,i]+ds_n[2:end-2,i].*(p_cor[2:end-2,i]-p_cor[3:end-1,i])
 # end
-# resid = norm(p_cor)
-# iter+=1
-#
-# # if iter%100==0 || iter == 1
-#     # println(u_val)
-#     PyPlot.clf()
-#     CS = PyPlot.contour(X,Y,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:gray])
-#     PyPlot.clabel(CS)
-#     # PyPlot.colorbar(orientation = "horizontal",extend = "both")
-#     PyPlot.pause(0.00005)
-# # end
-# # end
