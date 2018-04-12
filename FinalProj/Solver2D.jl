@@ -20,7 +20,7 @@ rho = 1000
 mu = 0.001
 u_relax = 0.5
 v_relax = 0.5
-p_relax = 1.0
+p_relax = 0.5
 
 
 # + 1 since we have ghost cells of 0 value
@@ -74,7 +74,7 @@ figure("u_contour")
 #
 #
 #
-# println("u_vel")
+println("u_vel")
 
 A_mat = zeros((length(u_x)-2)*(length(u_y)-2),(length(u_x)-2)*(length(u_y)-2))
 b_arr = zeros(length(A_mat[:,1]))
@@ -210,7 +210,7 @@ Min = sum(u_val[2:end-1,2])
 Min/Mout
 u_val[2:end-1,end-1] = u_val[2:end-1,end-2]*Min/Mout
 
-# println("v_vel")
+println("v_vel")
 #
 #
 #
@@ -296,7 +296,6 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
             # println("wall")
         end
 
-
     end
 
 
@@ -337,7 +336,7 @@ end
 # Solve for the v_velocity
 v_val_new = A_mat\b_arr
 
-# Reassemble u_val_new to correct dimensions
+# Reassemble v_val_new to correct dimensions
 j = 1
 for i = 1:length(v_val[:,1])-2
     v_val[i+1,2:end] = v_val_new[j:j+length(v_val[1,:])-2]
@@ -370,6 +369,7 @@ j = 1+1 # x position
 i = 1+1 # y position + 1 since we have ghost cells of 0 value
 
 for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
+# k = 1
     # k = 2
     # j = 2+1
 
@@ -378,6 +378,8 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     an = u_x[i+1] - u_x[i]
     as = u_x[i+1] - u_x[i]
 
+
+
 # println(k)
 # println(j)
 # println(k+1+(j-2)*2)
@@ -385,6 +387,33 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     dw = aw/Ap_u[k+(j-2)*2]
     dn = an/Ap_v[k+1+(length(v_val[1,:])-1)+(j-2)*3]
     ds = as/Ap_v[k+1+(j-2)*3]
+
+    #Apply boundary Conditions for deltas
+    if j==2
+        #Bottom
+        ds = as/Ap_v[k+1+(j-2)*3]/2.0
+        # as = as/2.0
+    elseif  j==(length(P_val[:,1])-1)
+        #Top
+        dn = an/Ap_v[k+1+(length(v_val[1,:])-1)+(j-2)*3]/2.0
+        # an = an/2.0
+    end
+
+
+    if k==(length(P_val[1,:])-3)*(j-2)+1 || k==1
+        # Apply inlet condition
+        dw = aw/Ap_u[k+(j-2)*2]/2.0
+        # aw = aw/2.0
+    # elseif k==(length(P_val[1,:])-3)*(j-1)
+    #     #Apply outlet conditions
+    #     de = ae/Ap_u[k+1+(j-2)*2]/2.0
+    #     # ae = ae/2.0
+    end
+
+    # println(de)
+    # println(dw)
+    # println(dn)
+    # println(ds)
 
     Ae = rho*de*ae
     Aw = rho*dw*aw
@@ -398,9 +427,11 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     #Apply Top and Bottom Wall Conditions
     if j==2
         As = 0.0
+        # as =as/2
         # println("bottom")
     elseif  j==(length(P_val[:,1])-1)
         An = 0.0
+        # an = an/2
         # println("top")
     end
 
@@ -408,15 +439,16 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
     if k==(length(P_val[1,:])-3)*(j-2)+1 || k==1
         # Apply inlet condition
         Aw = 0.0
+        # aw = aw/2
         # println("inlet")
-    elseif k==(length(P_val[1,:])-3)*(j-1)
-        #Apply outlet conditions
-        Ae = 0.0
-        # println("outlet")
+    # elseif k==(length(P_val[1,:])-3)*(j-1) # We aren't calculating outlet
+    #     #Apply outlet conditions
+    #     Ae = 0.0
+    #     # println("outlet")
     end
 
 
-    b_con = rho*u_val[j,i]*aw - rho*u_val[j,i+1]*ae + rho*v_val[j,i]*as - rho*v_val[j+1,i]*an
+    b_con = rho*u_val_new[k+(j-2)*2]*aw - rho*u_val_new[k+1+(j-2)*2]*ae + rho*v_val_new[k+1+(j-2)*3]*as - rho*v_val_new[k+1+(length(v_val[1,:])-1)+(j-2)*3]*an
 
 
     # Assemble A matrix
@@ -450,10 +482,10 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
         i=1+1
     end
 
-    # println(round.(A_mat[k,:],3))
+    println(round.(A_mat[k,:],4))
 end
-# println("b_arr")
-# println(b_arr)
+println("b_arr")
+println(b_arr)
 # Solve for the P correction
 p_cor_new = A_mat\b_arr
 
@@ -469,24 +501,24 @@ for i = 1:length(P_val[:,1])-2
     j=j+length(p_cor[1,:])-3
 end
 
-P_val = P_val+p_relax*p_cor
-
-for j = 1:length(u_val[:,1])-2
-u_val[j,3:end-2] = u_val[j,3:end-2]+dw_n[j,2:end-2].*(p_cor[j,2:end-2]-p_cor[j,3:end-1])
-end
-
-for i = 1:length(v_val[1,:])-2
-    v_val[3:end-2,i] = v_val[3:end-2,i]+ds_n[2:end-2,i].*(p_cor[2:end-2,i]-p_cor[3:end-1,i])
-end
-resid = norm(p_cor)
-iter+=1
-
-# if iter%100==0 || iter == 1
-    # println(u_val)
-    PyPlot.clf()
-    CS = PyPlot.contour(X,Y,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:gray])
-    PyPlot.clabel(CS)
-    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
-    PyPlot.pause(2.0)
+# P_val = P_val+p_relax*p_cor
+#
+# for j = 1:length(u_val[:,1])-2
+# u_val[j,3:end-2] = u_val[j,3:end-2]+dw_n[j,2:end-2].*(p_cor[j,2:end-2]-p_cor[j,3:end-1])
 # end
+#
+# for i = 1:length(v_val[1,:])-2
+#     v_val[3:end-2,i] = v_val[3:end-2,i]+ds_n[2:end-2,i].*(p_cor[2:end-2,i]-p_cor[3:end-1,i])
 # end
+# resid = norm(p_cor)
+# iter+=1
+#
+# # if iter%100==0 || iter == 1
+#     # println(u_val)
+#     PyPlot.clf()
+#     CS = PyPlot.contour(X,Y,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:gray])
+#     PyPlot.clabel(CS)
+#     # PyPlot.colorbar(orientation = "horizontal",extend = "both")
+#     PyPlot.pause(0.00005)
+# # end
+# # end
