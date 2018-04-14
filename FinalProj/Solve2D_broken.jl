@@ -18,9 +18,9 @@ V0 = 0.0001
 P0 = 0.001
 rho = 1000
 mu = 0.001
-u_relax = 0.5
-v_relax = 0.5
-p_relax = 0.5#1.0
+u_relax = 0.05
+v_relax = 0.05
+p_relax = 1.0#1.0
 
 Au = []
 Av = []
@@ -81,8 +81,8 @@ legend(loc = "best")
 
 resid = 1E20
 iter = 1
-
-while resid>1E-3 || iter <1E3
+iter2 = 1
+# while resid>1E-3 || iter <1E3
 # for iter2 = 1:2
 
 #
@@ -106,8 +106,9 @@ As = 0.0
 Ap = 0.0
 b_con = 0.0
 
-j = 2 # x position
-i = 2 # y position + 1 since we have ghost cells of 0 value
+j = 2 #
+i = 2 #
+
 for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
 
     if k==(length(u_val[1,:])-2)*(j-1)+1 || k==1
@@ -224,11 +225,13 @@ for k = 1:(length(u_val[:,1])-2)*(length(u_val[1,:])-2)
         j+=1
         i=2
     end
+    # println("$k $j $i ")
 
-    println(A_mat[k,:])
+    # println(A_mat[k,:])
 end
-println("b_arr")
-println(b_arr)
+
+# println("b_arr")
+# println(b_arr)
 
 # Solve for the u_velocity
 u_val_column = A_mat\b_arr
@@ -249,15 +252,17 @@ Min = sum(u_val_new[2:end-1,2])
 Min/Mout
 u_val_new[2:end-1,end-1] = u_val_new[2:end-1,end-2]*Min/Mout
 
-for i = 1:length(u_val[:,1])
-    println(u_val_new[i,:])
-end
+# for i = 1:length(u_val[:,1])
+#     println(u_val_new[i,:])
+# end
+
 
 j = 1
 for i = 1:length(u_val[:,1])-2
     u_val_column[j:j+length(u_val[1,:])-3] = u_val_new[i+1,2:end-1]
     j=j+length(u_val[1,:])-2
 end
+
 
 #
 #
@@ -280,8 +285,9 @@ b_con = 0.0
 
 j = 2 # x position
 i = 2 # y position + 1 since we have ghost cells of 0 value
-for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
 
+for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
+# println("$k $j $i ")
     # Apply inlet condition
     if k==(length(v_val[1,:])-1)*(j-1)+1 || k==1
 
@@ -337,6 +343,9 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
             b_con = 0.0
             # println("wall")
         end
+
+        # println("$j $i")
+        # println(Fw)
     end
 
     if k-(length(v_val[1,:])-1)>0
@@ -369,6 +378,7 @@ for k = 1:(length(v_val[:,1])-2)*(length(v_val[1,:])-1)
 
     # println(A_mat[k,:])
 end
+
 # println("b_arr")
 # println(b_arr)
 
@@ -500,6 +510,7 @@ for k = 1:(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
 
     # println(round.(A_mat[k,:],4))
 end
+
 # println("b_arr")
 # println(b_arr)
 
@@ -563,6 +574,7 @@ for i = 1:length(P_val[:,1])-2
     j=j+length(p_cor[1,:])-2
 end
 
+
 P_val_new = P_val_new+p_relax*p_cor
 
 for j = 2:length(u_val[:,1])-1
@@ -573,30 +585,36 @@ for j = 3:length(v_val[:,1])-2
     v_val_new[j,3:end] = v_val_new[j,3:end]+ds_n[j,2:end].*(p_cor[j-1,2:end]-p_cor[j,2:end])
 end
 
-# v_val_new[:,end] = 0.0
 
-# println("u_val")
-# for i = 1:length(u_val[:,1])
-#     println(u_val_new[i,:])
-# end
-#
-# println("v_val")
-# for i = 1:length(v_val[:,1])
-#     println(v_val_new[i,:])
-# end
-#
-# println("P_val")
-# for i = 1:length(P_val[:,1])
-#     println(P_val_new[i,:])
-# end
+# v_val_new[:,1] = 0.0
 
-u_val = u_val_new
-v_val = v_val_new
-P_val = P_val_new
+println("u_val")
+for i = 1:length(u_val[:,1])
+    println(u_val_new[i,:])
+end
 
-u_val_star = u_val_new
-v_val_star = v_val_new
-P_val_star = P_val_new
+println("v_val")
+for i = 1:length(v_val[:,1])
+    println(v_val_new[i,:])
+end
+
+println("P_val")
+for i = 1:length(P_val[:,1])
+    println(P_val_new[i,:])
+end
+
+u_val = copy(u_val_new)
+v_val = copy(v_val_new)
+P_val = copy(P_val_new)
+if iter2 ==2
+    break
+end
+println("!!! $iter2")
+u_val_star = copy(u_val_new)
+v_val_star = copy(v_val_new)
+P_val_star = copy(P_val_new)
+
+
 
 # v_val[:,end] = 0.0
 # P_val[:,end-1] = 0.0
@@ -612,19 +630,19 @@ iter+=1 
     PyPlot.colorbar(orientation = "horizontal",extend = "both")
     # PyPlot.pause(0.00005)
 
-    figure("v_contour")
-    PyPlot.clf()
-    CS = PyPlot.contourf(Xv,Yv,v_val[2:end-1,2:end-2],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
-    PyPlot.clabel(CS)
-    PyPlot.colorbar(orientation = "horizontal",extend = "both")
-    # PyPlot.pause(0.00005)
-
-    figure("p_contour")
-    PyPlot.clf()
-    CS = PyPlot.contourf(Xp,Yp,P_val[2:end-1,2:end-1],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
-    PyPlot.clabel(CS)
-    PyPlot.colorbar(orientation = "horizontal",extend = "both")
-    PyPlot.pause(0.0000000005)
+    # figure("v_contour")
+    # PyPlot.clf()
+    # CS = PyPlot.contourf(Xv,Yv,v_val[2:end-1,2:end-2],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
+    # PyPlot.clabel(CS)
+    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    # # PyPlot.pause(0.00005)
+    #
+    # figure("p_contour")
+    # PyPlot.clf()
+    # CS = PyPlot.contourf(Xp,Yp,P_val[2:end-1,2:end-1],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
+    # PyPlot.clabel(CS)
+    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    # PyPlot.pause(0.0000000005)
 
 # y_anal = linspace(Bot_pos,Top_pos,100)
 # G = (mean(P_val[:,2]-P_val[:,end-1]))/(u_x[end-1]-u_x[2])
@@ -638,4 +656,4 @@ iter+=1 
 # for i = 1:length(P_val[:,1])
 #     println(P_val[i,:])
 # end
-end
+# end
