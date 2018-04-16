@@ -164,7 +164,7 @@ N_yt = N_yt-1
 println("u_vel")
 
 for i = 2:N_xt
-    for j = 2:N_yt-1
+    for j =
 
         if i==2
             #Apply Inlet Conditions
