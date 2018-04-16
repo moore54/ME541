@@ -40,75 +40,50 @@ u_x = [u_x[1]-(u_x[2]-u_x[1]);u_x;u_x[end]+(u_x[end]-u_x[end-1])]
 v_y = [v_y[1]-(v_y[2]-v_y[1]);v_y;v_y[end]+(v_y[end]-v_y[end-1])]
 P_x = (u_x[2:end]-u_x[1:end-1])./2+u_x[1:end-1]
 P_y = (v_y[2:end]-v_y[1:end-1])./2+v_y[1:end-1]
-u_y = P_y
 v_x = [P_x;P_x[end]+(P_x[end]-P_x[end-1])]
 
 delx = v_x[2]-v_x[1]
 dely = v_y[2]-v_y[1]
 
-Xu,Yu=meshgrid(u_x[2:end-1],u_y[2:end-1])
-Xv,Yv=meshgrid(v_x[2:end-2],v_y[2:end-1])
-Xp,Yp=meshgrid(P_x[2:end-1],P_y[2:end-1])
+Xu,Yu=meshgrid(u_x[2:end],u_y)
+Xv,Yv=meshgrid(v_x[2:end],v_y[1:end-1])
+Xp,Yp=meshgrid(P_x,P_y)
 
 # include ghost cells of 0 value
 P_val = ones(N_xt,N_yt)*P0
-if second
-    P_val_end=[0.00454,0.00303,0.00181,0.001,0.00465,0.0032,0.00196,0.001,0.00481,0.00339,0.00215,0.001,0.00499,0.00354,0.0023,0.001]
-    j = 1
-    for i = 1:length(P_val[:,1])-2
-        P_val[i+1,2:end-1] = P_val_end[j:j+3]
-        j=j+4
-    end
-end
-# P_val[:,1] = 0.0 # outside domain
-# P_val[:,end] = 0.0
-# P_val[1,:] = 0.0
-# P_val[end,:] = 0.0
+P_val[:,1] = 0.0 # outside domain
+P_val[:,end] = 0.0
+P_val[1,:] = 0.0
+P_val[end,:] = 0.0
 P_val_star = copy(P_val)
-P_val_new = copy(P_val)
+
 #
 # P_val[:,end-1] = 0.0
 
 u_val = ones(N_xt,N_yt)*U0
-if second
-    uval_end = [0.001,0.00081,0.00077,0.00074,0.00085,0.001,0.00105,0.00102,0.00099,0.00113,0.001,0.00106,0.00103,0.00102,0.00114,0.001,0.00082,0.00079,0.00079,0.00088]
-    j = 1
-    for i = 1:length(u_val[:,1])-2
-        u_val[i+1,2:end-1] = uval_end[j:j+length(u_val[1,:])-3]
-        j=j+length(u_val[1,:])-2
-    end
-end
-# u_val[:,1] = 0.0
+u_val[:,1] = 0.0
 # u_val[:,end] = 0.0
-# u_val[1,:] = 0.0
-# u_val[end,:] = 0.0
+u_val[1,:] = 0.0
+u_val[end,:] = 0.0
 u_val_star = copy(u_val)
 u_val_new = copy(u_val)
 
 v_val = ones(N_xt,N_yt)*V0
-if second
-    v_val_end = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.43E-05,-3.98E-06,1.19E-06,7.15E-05,0.0,0.0,3.16E-06,2.82E-06,6.43E-06,8.66E-05,0.0,0.0,-9.83E-06,8.79E-06,8.50E-06,7.57E-05,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-    j = 1
-    for i = 1:length(v_val[:,1])-2
-        v_val[i+1,2:end] = v_val_end[j:j+length(v_val[1,:])-2]
-        j=j+length(v_val[1,:])-1
-    end
-end
-# v_val[:,end] = 0.0
-# v_val[:,1] = 0.0
+v_val[:,end] = 0.0
+v_val[:,1] = 0.0
 # v_val[1,:] = 0.0
-# v_val[end,:] = 0.0
+v_val[end,:] = 0.0
 v_val_star = copy(v_val)
 v_val_new = copy(v_val)
 P_cor = zeros(P_val)
 
-# plot(P_x,ones(P_x)*P_y[1],"x",label = "Pressure X Nodes")
-# plot(ones(P_y)*P_x[1],P_y,"x",label = "Pressure Y Nodes")
-# plot(u_x,ones(u_x)*u_y[1],".",label = "u X Nodes")
-# plot(ones(u_y)*u_x[1],u_y,".",label = "u Y Nodes")
-# plot(v_x,ones(v_x)*v_y[1],"*",label = "v X Nodes")
-# plot(ones(v_y)*v_x[1],v_y,"*",label = "v Y Nodes")
-# legend(loc = "best")
+plot(P_x,ones(P_x)*P_y[1],"x",label = "Pressure X Nodes")
+plot(ones(P_y)*P_x[1],P_y,"x",label = "Pressure Y Nodes")
+plot(u_x,ones(u_x)*u_y[1],".",label = "u X Nodes")
+plot(ones(u_y)*u_x[1],u_y,".",label = "u Y Nodes")
+plot(v_x,ones(v_x)*v_y[1],"*",label = "v X Nodes")
+plot(ones(v_y)*v_x[1],v_y,"*",label = "v Y Nodes")
+legend(loc = "best")
 Ae = 0.0
 Aw = 0.0
 An = 0.0
@@ -133,7 +108,7 @@ As_matv = zeros(v_val)
 Ap_matv = zeros(v_val)
 b_matv = zeros(v_val)
 
-A_matv = zeros((length(v_x)-2)*(length(v_y)-2),(length(v_x)-2)*(length(v_y)-2))
+A_matv = eye(N_xt*N_yt)
 b_arrv = zeros(length(A_matv[:,1]))
 
 Ae_matP = zeros(P_val)
@@ -146,26 +121,26 @@ b_matP = zeros(P_val)
 dw_n = zeros(P_val)
 ds_n = zeros(P_val)
 
-A_matP = zeros((length(P_x)-2)*(length(P_y)-3),(length(P_x)-2)*(length(P_y)-3))
+A_matP = eye(N_xt*N_yt)
 b_arrP = zeros(length(A_matP[:,1]))
 
 
 iter = 1
 # while resid>1E-3 || iter <1E3
-# for iter2 = 1:20
-N_xt = N_xt-1
-N_yt = N_yt-1
+for iter2 = 1:20
+# N_xt = N_xt-1
+# N_yt = N_yt-1
 
 #
 #
 #
 #------------- 1) u_vel ------------#
 # GENERATE COEFFICIENTS
-println("u_vel")
+# println("u_vel")
 
 for i = 2:N_xt
-    for j =
-
+    for j = 2:N_yt-1
+        # println("$j $i")
         if i==2
             #Apply Inlet Conditions
             Ae = 0.0
@@ -175,8 +150,8 @@ for i = 2:N_xt
             Ap = 1.0
             b_con = U0
 
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)] = Ap
-            b_arru[(j-1)*N_xt+(i-1)] = b_con
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+            b_arru[1+(j-1)*N_xt+(i-1)] = b_con
 
         elseif i==(N_xt)
             #Apply outlet conditions
@@ -187,9 +162,9 @@ for i = 2:N_xt
             Ap = 1.0
             b_con = 0.0
 
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)-1] = -Aw
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)] = Ap
-            b_arru[(j-1)*N_xt+(i-1)] = b_con
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-1] = -Aw
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+            b_arru[1+(j-1)*N_xt+(i-1)] = b_con
 
         else
 
@@ -225,7 +200,7 @@ for i = 2:N_xt
                 Ap = Ap/u_relax
 
                 #Apply top wall boundary conditions but not on inlet or outlet
-            elseif j == N_yt-2
+            elseif j == N_yt-1
 
                 As = 0.0
                 Ap = Ae+Aw+As+An+ Few + Fns
@@ -237,12 +212,12 @@ for i = 2:N_xt
 
             b_con = (P_val_star[j,i-1]-P_val_star[j,i])*(dely) + 0.0 + (1-u_relax)*Ap*u_val_star[j,i]
 
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)+1] = -Ae
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)-1] = -Aw
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)-N_xt] = -An
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)+N_xt] = -As
-            A_matu[(j-1)*N_xt+(i-1),(j-1)*N_xt+(i-1)] = Ap
-            b_arru[(j-1)*N_xt+(i-1)] = b_con
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)+1] = -Ae
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-1] = -Aw
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-N_xt] = -An
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)+N_xt] = -As
+            A_matu[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+            b_arru[1+(j-1)*N_xt+(i-1)] = b_con
 
         end
 
@@ -258,57 +233,27 @@ for i = 2:N_xt
     end
 end
 
-#ASSEMBLE U COEFFICIENTS
-
-# k = 1*(N_xt-1)
-# for i = 2:N_xt-1
-#     for j = 2:N_yt-1
-#
-#         #Assemble A matrix
-#         if k-(length(u_val[1,:])-1)>0
-#             A_matu[k,k-(length(u_val[1,:])-1)] = -An_matu[j,i]
-#         end
-#
-#         if k-1>0
-#             A_matu[k,k-1] = -Aw_matu[j,i]
-#         end
-#
-#         A_matu[k,k] = Ap_matu[j,i]
-#
-#         if k+1<=(length(u_val[:,1])-2)*(length(u_val[1,:])-1)
-#             A_matu[k,k+1] = -Ae_matu[j,i]
-#         end
-#
-#         if k+(length(u_val[1,:])-1)<=(length(u_val[:,1])-2)*(length(u_val[1,:])-1)
-#             A_matu[k,k+(length(u_val[1,:])-1)] = -As_matu[j,i]
-#         end
-#         b_arru[k] = b_matu[j,i]
-#         k+=1
-#     end
-#
+# println("A_matu")
+# for i = 1:length(A_matu[:,1])
+#     println(A_matu[i,:])
 # end
-
-println("A_matu")
-for i = 1:length(A_matu[:,1])
-    println(A_matu[i,:])
-end
 # println(b_arru)
 
 # Solve for the u_velocity
 u_val_column = A_matu\b_arru
-
+# println(u_val_column)
 # Reassemble u_val_column to correct dimensions
-j = 1
-for i = 1:length(u_val[:,1])-2
-    u_val_new[i+1,2:end-1] = u_val_column[j:j+length(u_val[1,:])-3]
-    j=j+length(u_val[1,:])-2
+i = 1
+for j = 1:N_yt
+    u_val_new[j,:] = u_val_column[i:i+N_xt-1]
+    i = i+N_xt
 end
 
 # Apply mass flowrate correction
 Mout = sum(u_val_new[2:end-1,end-1])
 Min = sum(u_val_new[2:end-1,2])
-Min/Mout
-u_val_new[2:end-1,end-1] = u_val_new[2:end-1,end-2]*Min/Mout
+
+u_val_new[2:end-1,end] = u_val_new[2:end-1,end-1]*Min/Mout
 
 # println("uval")
 # for i = 1:length(u_val[:,1])
@@ -321,10 +266,10 @@ u_val_new[2:end-1,end-1] = u_val_new[2:end-1,end-2]*Min/Mout
 #
 #
 
-for j = 2:length(v_val[:,1])-1
-    for i = 2:length(v_val[1,:])
+for i = 1:N_xt
+    for j = 1:N_yt-1
 
-        if i==2
+        if i==1
             #Apply inlet
             Ae = 0.0
             Aw = 0.0
@@ -333,7 +278,10 @@ for j = 2:length(v_val[:,1])-1
             Ap = 1.0
             b_con = 0.0
 
-        elseif i==length(v_val[1,:])
+            A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+            b_arrv[1+(j-1)*N_xt+(i-1)] = b_con
+
+        elseif i==N_xt
             #Apply outlet conditions
             Ae = 0.0
             Aw = 1.0
@@ -343,16 +291,22 @@ for j = 2:length(v_val[:,1])-1
             b_con = 0.0
             # println("outlet")
 
+            A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-1] = -Aw
+            A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+            b_arrv[1+(j-1)*N_xt+(i-1)] = b_con
+
         else
-            #Apply Top and Bottom Wall Conditions, but not on inlet or outlet
-            if j==2 || j==length(v_val[:,1])-1
+            # Apply Top and Bottom Wall Conditions, but not on inlet or outlet
+            if j==1 || j==N_yt-1
                 Ae = 0.0
                 Aw = 0.0
                 An = 0.0
                 As = 0.0
                 Ap = 1.0
                 b_con = 0.0
-                # println("wall")
+
+                A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+                b_arrv[1+(j-1)*N_xt+(i-1)] = b_con
             else
                 De = mu/delx
                 Fe = rho/2*(u_val_new[j,i+1]+u_val_new[j+1,i+1])
@@ -377,7 +331,17 @@ for j = 2:length(v_val[:,1])-1
                 Ap = Ap/v_relax
                 b_con = (P_val_star[j+1,i]-P_val_star[j,i])*delx + 0.0 + (1-v_relax)*Ap*v_val_star[j,i]
 
+                A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)+1] = -Ae
+                A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-1] = -Aw
+                A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-N_xt] = -An
+                A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)+N_xt] = -As
+                A_matv[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+                b_arrv[1+(j-1)*N_xt+(i-1)] = b_con
+
             end
+
+
+
         end
         Ae_matv[j,i] = Ae
         Aw_matv[j,i] = Aw
@@ -388,39 +352,6 @@ for j = 2:length(v_val[:,1])-1
     end
 end
 
-# println("b_matv")
-# for i = 1:length(b_matv[:,1])
-#     println(b_matv[i,:])
-# end
-
-
-
-k = 1
-for j = 2:length(v_val[:,1])-1
-    for i = 2:length(v_val[1,:])-1
-        if k-(length(v_val[1,:])-1)>0
-            A_matv[k,k-(length(v_val[1,:])-1)] = -An_matv[j,i]
-        end
-
-        if k-1>0
-            A_matv[k,k-1] = -Aw_matv[j,i]
-        end
-
-        A_matv[k,k] = Ap_matv[j,i]
-
-        if k+1<=(length(v_val[:,1])-2)*(length(v_val[1,:])-2)
-            A_matv[k,k+1] = -Ae_matv[j,i]
-        end
-
-        if k+(length(v_val[1,:])-1)<=(length(v_val[:,1])-2)*(length(v_val[1,:])-2)
-            A_matv[k,k+(length(v_val[1,:])-1)] = -As_matv[j,i]
-        end
-
-        b_arrv[k] = b_matv[j,i]
-        k+=1
-
-    end
-end
 
 # println("A_matv")
 # for i = 1:length(A_matv[:,1])
@@ -431,15 +362,23 @@ end
 v_val_column = A_matv\b_arrv
 
 # Reassemble v_val_column to correct dimensions
-j = 1
-for i = 2:length(v_val[:,1])-1
-    # println(j)
-    v_val_new[i,2:end-1] = v_val_column[j:j+length(v_val_new[1,:])-3]
-    j=j+length(v_val[1,:])-2
-    # println(j-1)
+i = 1
+for j = 1:N_yt
+    v_val_new[j,:] = v_val_column[i:i+N_xt-1]
+    i = i+N_xt
 end
 
+# println("uval")
+# for i = 1:length(u_val[:,1])
+#     println(u_val_new[i,:])
+# end
+#
+# println("vval")
+# for i = 1:length(v_val_new[:,1])
+#     println(v_val_new[i,:])
+# end
 
+#
 #
 #
 #
@@ -449,12 +388,8 @@ end
 #
 #
 
-
-j = 2 # x position
-i = 2 # y position + 1 since we have ghost cells of 0 value
-
-for j = 2:(length(P_val[:,1])-1)
-    for i = 2:(length(P_val[1,:])-2)
+for i = 2:N_xt-1
+    for j = 2:N_yt-1
 
         ae = dely
         aw = dely
@@ -466,26 +401,18 @@ for j = 2:(length(P_val[:,1])-1)
         dn = an/Ap_matv[j-1,i]
         ds = as/Ap_matv[j,i]
 
+        # println("$de $dw $ds $dn")
+
         #Apply boundary Conditions for deltas
-        if j==2
-            #top
+        if j==2 #top
             dn = dn/2.0
-            # as = as/2.0
-        elseif  j==(length(P_val[:,1])-1)
-            #bottom
+        elseif  j==N_yt-1 #bottom
             ds = ds/2.0
-            # an = an/2.0
         end
 
-        if i==1
-            # Apply inlet condition
+        if i==2 # Apply inlet condition
             dw = dw/2.0
-            # aw = aw/2.0
-        elseif i==(length(P_val[1,:])-3)
-            #Apply outlet conditions
-            # de = de/2.0
-            # ae = ae/2.0
-        end
+        end #outlet not calculated or included due to the x-1 nature
 
         Ae = rho*de*ae
         Aw = rho*dw*aw
@@ -493,29 +420,30 @@ for j = 2:(length(P_val[:,1])-1)
         As = rho*ds*as
         Ap = Ae+Aw+An+As
 
-        #Apply Top and Bottom Wall Conditions
-        if j==2
-            As = 0.0
-            # as =as/2
-            # println("bottom")
-        elseif  j==(length(P_val[:,1])-1)
-            An = 0.0
-            # an = an/2
-            # println("top")
-        end
-
-        if i==1
-            # Apply inlet condition
-            Aw = 0.0
-            # aw = aw/2
-            # println("inlet")
-        elseif i==(length(P_val[1,:])-3) # We aren't calculating outlet
-            #Apply outlet conditions
-            Ae = 0.0
-            # println("outlet")
-        end
-
         b_con = rho*u_val_new[j,i]*aw - rho*u_val_new[j,i+1]*ae + rho*v_val_new[j,i]*as - rho*v_val_new[j-1,i]*an
+        # println("$j $i $(v_val_new[j-1,i]) ")
+        #Apply Top and Bottom Wall Conditions
+        if j==2 #top
+            An = 0.0
+        elseif  j==N_yt-1 #bot
+            As = 0.0
+        end
+
+        if i==2 # Apply inlet condition
+            Aw = 0.0
+        elseif i==N_xt-2 #Apply outlet conditions
+            Ae = 0.0
+        end
+
+        if i<N_xt-1
+            A_matP[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)+1] = -Ae
+            A_matP[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-1] = -Aw
+            A_matP[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)-N_xt] = -An
+            A_matP[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)+N_xt] = -As
+            A_matP[1+(j-1)*N_xt+(i-1),1+(j-1)*N_xt+(i-1)] = Ap
+            b_arrP[1+(j-1)*N_xt+(i-1)] = b_con
+        end
+
 
         Ae_matP[j,i] = Ae
         Aw_matP[j,i] = Aw
@@ -530,108 +458,90 @@ for j = 2:(length(P_val[:,1])-1)
     end
 end
 
-# println("b_matP")
-# for i = 1:length(b_matP[:,1])
-#     println(b_matP[i,:])
+
+# println("A_matP")
+# for i = 1:length(A_matP[:,1])
+#     println(A_matP[i,:])
 # end
-
-#Assemble coefficients
-k=1
-for j = 2:(length(P_val[:,1])-1)
-    for i = 2:(length(P_val[1,:])-2)
-
-        # Assemble A matrix
-        if k-(length(P_val[1,:])-3)>0
-            A_matP[k,k-(length(P_val[1,:])-3)] = -As_matP[j,i]
-        end
-
-        if k-1>0
-            A_matP[k,k-1] = -Aw_matP[j,i]
-        end
-
-        A_matP[k,k] = Ap_matP[j,i]
-
-        if k+1<=(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
-            A_matP[k,k+1] = -Ae_matP[j,i]
-        end
-
-        if k+(length(P_val[1,:])-3)<=(length(P_val[:,1])-2)*(length(P_val[1,:])-3)
-            A_matP[k,k+(length(P_val[1,:])-3)] = -An_matP[j,i]
-        end
-
-        b_arrP[k] = b_matP[j,i]
-
-        k+=1
-    end
-end
-
-# println("b_arr")
-# println(b_arr)
+# println(b_arrP)
 
 # Solve for the P correction
-P_cor_new = A_matP\b_arrP
-
+P_cor_new_col = A_matP\b_arrP
+# println("P_cor")
+# println(P_cor_new_col)
 # Reassemble P_cor_new to correct dimensions
 
 
-j = 1
-for i = 1:length(P_val[:,1])-2
-    P_cor[i+1,2:end-2] = P_cor_new[j:j+length(P_cor[1,:])-4]
-    j=j+length(P_cor[1,:])-3
+i = 1
+for j = 1:N_yt
+    P_cor[j,:] = P_cor_new_col[i:i+N_xt-1]
+    i = i+N_xt
 end
 
-
-P_val_new = P_val_new+p_relax*P_cor
-
-for j = 2:length(u_val[:,1])-1
-    u_val_new[j,3:end-2] = u_val_new[j,3:end-2]+dw_n[j,3:end-1].*(P_cor[j,2:end-2]-P_cor[j,3:end-1])
-end
-
-for j = 3:length(v_val[:,1])-2
-    v_val_new[j,3:end] = v_val_new[j,3:end]+ds_n[j,2:end].*(P_cor[j-1,2:end]-P_cor[j,2:end])
-end
-
-# v_val_new[:,1] = 0.0
-# v_val[:,end] = 0.0
-# P_val[:,end-1] = 0.0
-
-u_val = copy(u_val_new)
-v_val = copy(v_val_new)
-P_val = copy(P_val_new)
-# if iter2 ==2
-#     break
+# println("P_cor")
+# for i = 1:length(P_cor[:,1])
+#     println(P_cor[i,:])
 # end
-# println("!!! $iter2")
-u_val_star = copy(u_val_new)
-v_val_star = copy(v_val_new)
-P_val_star = copy(P_val_new)
+
+
+P_val = P_val+p_relax*P_cor
+# P_val[:,end] = 0.0
+# println("P_val")
+# for i = 1:length(P_val[:,1])
+#     println(P_val[i,:])
+# end
+
+
+for j = 1:N_yt
+    u_val[j,3:end] = u_val_new[j,3:end]+dw_n[j,3:end].*(P_cor[j,2:end-1]-P_cor[j,3:end])
+end
+
+for j = 1:N_yt-2
+    v_val[j,2:end-1] = v_val_new[j,2:end-1]+ds_n[j,2:end-1].*(P_cor[j+1,2:end-1]-P_cor[j,2:end-1])
+end
+v_val[end-1,:] = v_val_new[end-1,:]
+# println("uval")
+# for i = 1:length(u_val[:,1])
+#     println(u_val[i,:])
+# end
+
+# println("vval")
+# for i = 1:length(v_val[:,1])
+#     println(v_val[i,:])
+# end
+
+
+
+u_val_star = (u_val_new)
+v_val_star = (v_val_new)
+P_val_star = (P_val)
 
 
 resid = norm(P_cor)
-iter+=1 
+iter+=1
 
 # if iter%100==0 || iter == 1
     # println(u_val)
-    # figure("u_contour")
-    # PyPlot.clf()
-    # CS = PyPlot.contourf(Xu,Yu,u_val[2:end-1,2:end-1],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
-    # PyPlot.clabel(CS)
-    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
-    # # PyPlot.pause(0.00005)
-    #
-    # figure("v_contour")
-    # PyPlot.clf()
-    # CS = PyPlot.contourf(Xv,Yv,v_val[2:end-1,2:end-2],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
-    # PyPlot.clabel(CS)
-    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
-    # # PyPlot.pause(0.00005)
-    #
-    # figure("p_contour")
-    # PyPlot.clf()
-    # CS = PyPlot.contourf(Xp,Yp,P_val[2:end-1,2:end-1],interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
-    # PyPlot.clabel(CS)
-    # PyPlot.colorbar(orientation = "horizontal",extend = "both")
-    # PyPlot.pause(0.0000000005)
+    figure("u_contour")
+    PyPlot.clf()
+    CS = PyPlot.contourf(Xu,Yu,u_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
+    PyPlot.clabel(CS)
+    PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    # PyPlot.pause(0.00005)
+
+    figure("v_contour")
+    PyPlot.clf()
+    CS = PyPlot.contourf(Xv,Yv,v_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
+    PyPlot.clabel(CS)
+    PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    # PyPlot.pause(0.00005)
+
+    figure("p_contour")
+    PyPlot.clf()
+    CS = PyPlot.contourf(Xp,Yp,P_val,interpolation = "cubic",origin = "lower",cmap = PyPlot.cm[:viridis])
+    PyPlot.clabel(CS)
+    PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    PyPlot.pause(0.0000000005)
 
 # y_anal = linspace(Bot_pos,Top_pos,100)
 # G = (mean(P_val[:,2]-P_val[:,end-1]))/(u_x[end-1]-u_x[2])
@@ -645,4 +555,4 @@ iter+=1 
 # for i = 1:length(P_val[:,1])
 #     println(P_val[i,:])
 # end
-# end
+end
