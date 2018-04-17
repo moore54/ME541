@@ -655,7 +655,7 @@ for grid_i = 1:NG
     PyPlot.plot(u_val[:,end]*1E4,u_y,"k.",label = "Numerical U-Velocity")
     PyPlot.plot(u_anal*1E4,y_anal,"bx-",label = "Analytical U-Velocity")
     PyPlot.xlabel("U-Velocity *1E-4 (m/s)")
-    PyPlot.ylabel("y-position *1E-4 (m)")
+    PyPlot.ylabel("y-position (m)")
     PyPlot.legend(loc = "best")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 

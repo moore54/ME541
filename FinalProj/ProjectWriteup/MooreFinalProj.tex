@@ -81,7 +81,7 @@ linkcolor=blue}
     $\alpha_{U}$ & 0.6 & U-relaxation factor  \\
     $\alpha_{V}$ & 0.6 & V-relaxation factor  \\
     $\alpha_{P}$ & 1.0 & P-relaxation factor  \\
-    Convergence Criteria  & 1E-6 & Norm of P' \\
+    Convergence Criteria  & 1E-6 & $l^2$ Norm of P' \\
     Model Accuracy Criteria  & \% & Outlet U-Velocity Integral \% Error  \\
     Finest Mesh  & 4096 & Nodes (64x64) \\
 
@@ -90,11 +90,11 @@ linkcolor=blue}
   \label{tab:params}
 \end{table*}
 
-\vspace{0pt}
+\vspace{-20pt}
 
 \section{Contour Plots}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 0.5cm .0cm 0cm},clip,width=0.9\textwidth]{p_contour4}
 \vspace{-5pt}
@@ -102,7 +102,8 @@ linkcolor=blue}
 \label{f:3b}
 \end{figure}
 
-\begin{figure}[htbp]
+\vspace{-10pt}
+\begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 1.0cm .0cm 0cm},clip,width=0.9\textwidth]{u_contour4}
 \vspace{-5pt}
@@ -110,7 +111,8 @@ linkcolor=blue}
 \label{f:3b}
 \end{figure}
 
-\begin{figure}[htbp]
+\vspace{-10pt}
+\begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 1.0cm .0cm 0cm},clip,width=0.9\textwidth]{v_contour4}
 \vspace{-5pt}
@@ -118,11 +120,12 @@ linkcolor=blue}
 \label{f:3b}
 \end{figure}
 
-\begin{figure}[htbp]
+\vspace{-10pt}
+\begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 1.0cm .0cm 0cm},clip,width=0.9\textwidth]{stream4}
 \vspace{-5pt}
-\caption{Stream plot showing U and V velocities' relative direction and pressure in the color. Boundaries outlined in black.}
+\caption{Stream plot showing U and V velocities' relative direction and pressure in the color.}
 \label{f:3b}
 \end{figure}
 
@@ -160,11 +163,11 @@ linkcolor=blue}
             u_{analytical} = \frac{{\Delta p}/{\Delta x}}{(2 \mu) y (Top-y)}
             \end{equation}
       
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 0.0cm .0cm 0cm},clip,width=0.75\textwidth]{outlet_4}
 \vspace{-5pt}
-\caption{Analytical versus numerical solution; solution progression from left to right towards convergence.  Updated every 10 iterations.}
+\caption{Analytical versus numerical solution; solution progression from left to right towards convergence.  Updated every 10 iterations. }
 \label{f:3b}
 \end{figure}
 
@@ -174,14 +177,14 @@ linkcolor=blue}
        Integral\,Error\,(\%) = \frac{\int_{Bot}^{Top}{(u_{analytical}-u_{numerical})}}{\int_{Bot}^{Top}{u_{analytical}}} \times 100
     \end{equation}
     
-\noindent Numerical values were splined using cubic b-splines to keep error calculations consistent over 100 samples regardless of grid size.  Outlet U-Velocity was used.
+\noindent Numerical values were splined using cubic b-splines to keep error calculations consistent over 100 samples regardless of grid size.  U-Velocity at outlet was used.
 
 
 \begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm .5cm .0cm 0cm},clip,width=0.85\textwidth]{error_4}
 \vspace{-5pt}
-\caption{Percent integral error of numerical and analytical, converges about 0.125\% for the finest grid, which is shown here. Updated every 10 iterations.}
+\caption{Percent integral error of numerical and analytical, converges with about 0.125\% error for the finest grid, which is shown here. Updated every 10 iterations. (Recall convergence criteria was $l^2$ norm of P' was less than 1E-6)}
 \label{f:3b}
 \end{figure}
 
@@ -190,7 +193,7 @@ linkcolor=blue}
 \section{Grid Independence}
 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 0cm .0cm 0cm},clip,width=0.75\textwidth]{GridCon_Error}
 \vspace{-5pt}
@@ -203,7 +206,7 @@ linkcolor=blue}
 \centering
 \includegraphics[trim={.0cm 0cm .0cm 0cm},clip,width=0.75\textwidth]{GridCon_Iters}
 \vspace{-5pt}
-\caption{Doubling number of nodes in each direction increases required iterations for convergence in an asymptotic way indicating a better convergence criteria may be needed.}
+\caption{Doubling number of nodes in each direction increases required iterations for convergence in a $\sqrt{Nodes}$ manner.}
 \label{f:3b}
 \end{figure}
 
@@ -218,6 +221,7 @@ According to the analytical equation above  $\Delta P = 0.006\,pa$.  I calculate
 
 \noindent [0.0, 4.65088e-5, 0.000137329, 0.00022522, 0.000310181, 0.000392212, 0.000471313, 0.000547485, 0.000620728, 0.00069104, 0.000758423, 0.000822876, 0.000884399, 0.000942993, 0.000998657, 0.00105139, 0.0011012, 0.00114807, 0.00119202, 0.00123303, 0.00127112, 0.00130627, 0.0013385, 0.0013678, 0.00139417, 0.0014176, 0.00143811, 0.00145569, 0.00147034, 0.00148206, 0.00149084, 0.0014967, 0.00149963, 0.00149963, 0.0014967, 0.00149084, 0.00148206, 0.00147034, 0.00145569, 0.00143811, 0.0014176, 0.00139417, 0.0013678, 0.0013385, 0.00130627, 0.00127112, 0.00123303, 0.00119202, 0.00114807, 0.0011012, 0.00105139, 0.000998657, 0.000942993, 0.000884399, 0.000822876, 0.000758423, 0.00069104, 0.000620728, 0.000547485, 0.000471313, 0.000392212, 0.000310181, 0.00022522, 0.000137329, 4.65088e-5, 0.0]\\
 
+\newpage
 \noindent Numerical U-Velocity
 
 \noindent [0.0, 4.68517e-5, 0.000137639, 0.0002255, 0.000310428, 0.000392422, 0.000471485, 0.000547618, 0.000620821, 0.000691096, 0.000758443, 0.000822862, 0.000884352, 0.000942915, 0.000998549, 0.00105126, 0.00110103, 0.00114788, 0.0011918, 0.0012328, 0.00127086, 0.001306, 0.00133821, 0.00136749, 0.00139384, 0.00141727, 0.00143776, 0.00145533, 0.00146997, 0.00148168, 0.00149047, 0.00149632, 0.00149925, 0.00149925, 0.00149632, 0.00149046, 0.00148168, 0.00146996, 0.00145532, 0.00143775, 0.00141726, 0.00139383, 0.00136748, 0.00133819, 0.00130598, 0.00127085, 0.00123278, 0.00119179, 0.00114786, 0.00110101, 0.00105124, 0.000998529, 0.000942895, 0.000884332, 0.000822842, 0.000758424, 0.000691078, 0.000620804, 0.000547602, 0.000471471, 0.000392411, 0.000310418, 0.000225493, 0.000137634, 4.685e-5, 0.0]
