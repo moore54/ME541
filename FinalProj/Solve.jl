@@ -13,19 +13,21 @@ rc("image",interpolation = "spline16")
 
 meshgrid(x,y) = (repmat(x',length(y),1),repmat(y,1,length(x)))
 
+# Specify number of grids to solve for, doubling nodes in each direction for each grid
 NG = 4
-factor = linspace(1,NG,2)
+factor = linspace(1,NG,NG)
 end_error = zeros(factor)
 final_iter = zeros(factor)
 factor = round.(Int, factor)
 total_error = 0.0
 N_nodes = (4*2.^factor).^2
 
+# Relaxation factors
 u_relax = 0.6
 v_relax = 0.6
 p_relax = 1.0
 
-
+# Initialize variables in this scope for post processing
 u_val = []
 u_y = []
 u_anal = []
@@ -562,7 +564,7 @@ for grid_i = 1:NG
 
         resid = norm(P_cor)
 
-        println(resid)
+        # println(resid)
         if iter%10==0 || iter == 1
 
             y_anal = u_y
@@ -584,9 +586,9 @@ for grid_i = 1:NG
             # G = (mean(P_val[:,2]-P_val[:,end]))/(u_x[end-1]-u_x[2])
             figname = "outlet_$grid_i"
             figure("outlet_$grid_i")
-            PyPlot.plot(u_val[:,end],u_y,"k.")
-            PyPlot.plot(u_anal,y_anal,"bx-")
-            PyPlot.xlabel("U Velocity (m/s)")
+            PyPlot.plot(u_val[:,end]*1E4,u_y,"k.")
+            PyPlot.plot(u_anal*1E4,y_anal,"bx-")
+            PyPlot.xlabel("U Velocity *1E-4 (m/s)")
             PyPlot.ylabel("y-position (m)")
             # PyPlot.savefig("./figures/$figname.pdf",transparent = true)
             PyPlot.pause(0.0000005)
@@ -612,7 +614,7 @@ for grid_i = 1:NG
 
 
             figname = "error_$grid_i"
-            println(total_error)
+            # println(total_error)
             figure("error_$grid_i")
             PyPlot.semilogy(iter,total_error*100,"k.")
             PyPlot.xlabel("Iteration (#)")
@@ -639,6 +641,12 @@ for grid_i = 1:NG
         end
     end
 
+    println("Analytical $grid_i")
+    println(u_anal)
+
+    println("Numberical $grid_i")
+    println(u_val[:,end])
+
     rc("figure.subplot", left=0.17, bottom=0.18, top=0.97, right=.9)
 
     # G = (mean(P_val[:,2]-P_val[:,end]))/(u_x[end-1]-u_x[2])
@@ -646,8 +654,8 @@ for grid_i = 1:NG
     figure("outlet_$grid_i")
     PyPlot.plot(u_val[:,end]*1E4,u_y,"k.",label = "Numerical U-Velocity")
     PyPlot.plot(u_anal*1E4,y_anal,"bx-",label = "Analytical U-Velocity")
-    PyPlot.xlabel("U-Velocity *1E4 (m/s)")
-    PyPlot.ylabel("y-position *1E4 (m)")
+    PyPlot.xlabel("U-Velocity *1E-4 (m/s)")
+    PyPlot.ylabel("y-position *1E-4 (m)")
     PyPlot.legend(loc = "best")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
@@ -672,7 +680,7 @@ for grid_i = 1:NG
     total_error = sum(abs.((u_anal2-u_val_for_error)))/sum(u_anal2)
 
     figname = "error_$grid_i"
-    println(total_error)
+    # println(total_error)
     figure("error_$grid_i")
     PyPlot.semilogy(iter,total_error*100,"k.")
     PyPlot.xlabel("Iteration (#)")
@@ -684,7 +692,7 @@ for grid_i = 1:NG
     figname = "u_contour$grid_i"
     figure(figname)
     CS = PyPlot.contourf(Xu,Yu,u_val*1E4,interpolation = "spline16",origin = "lower",cmap = PyPlot.cm[:viridis],levels = linspace(minimum(u_val*1E4),maximum(u_val*1E4),1000))
-    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "U Velocity x 1E4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(u_val*1E4),maximum(u_val*1E4),8),1))
+    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "U Velocity x 1E-4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(u_val*1E4),maximum(u_val*1E4),8),1))
     PyPlot.xlabel("X-Position (m)")
     PyPlot.ylabel("Y-Position (m)")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
@@ -692,7 +700,7 @@ for grid_i = 1:NG
     figname = "v_contour$grid_i"
     figure(figname)
     CS = PyPlot.contourf(Xv,Yv,v_val*1E4,interpolation = "spline16",origin = "lower",cmap = PyPlot.cm[:viridis],levels = linspace(minimum(v_val*1E4),maximum(v_val*1E4),1000))
-    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "V Velocity x 1E4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(v_val*1E4),maximum(v_val*1E4),8),3))
+    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "V Velocity x 1E-4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(v_val*1E4),maximum(v_val*1E4),8),3))
     PyPlot.xlabel("X-Position (m)")
     PyPlot.ylabel("Y-Position (m)")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
@@ -724,17 +732,30 @@ for grid_i = 1:NG
     end_error[grid_i] = total_error
 end
 
-# rc("figure.subplot", left=0.17, bottom=0.18, top=0.97, right=.9)
-# figname = "GridCon_Error"
-# PyPlot.figure(figname)
-# PyPlot.plot(N_nodes,end_error*100,"k.-")
-# PyPlot.xlabel("Nodes (#)")
-# PyPlot.ylabel("Converged Integral Error (%)")
-# PyPlot.savefig("./figures/$figname.pdf",transparent = true)
-#
-# figname = "GridCon_Iters"
-# PyPlot.figure(figname)
-# PyPlot.plot(N_nodes,final_iter,"k.-")
-# PyPlot.xlabel("Nodes (#)")
-# PyPlot.ylabel("Requred Iterations(#)")
-# PyPlot.savefig("./figures/$figname.pdf",transparent = true)
+rc("figure.subplot", left=0.17, bottom=0.18, top=0.97, right=.9)
+figname = "GridCon_Error"
+PyPlot.figure(figname)
+PyPlot.plot(N_nodes,end_error*100,"k.-")
+PyPlot.xlabel("Nodes (#)")
+PyPlot.ylabel("Converged Integral Error (%)")
+PyPlot.savefig("./figures/$figname.pdf",transparent = true)
+
+figname = "GridCon_Iters"
+PyPlot.figure(figname)
+PyPlot.plot(N_nodes,final_iter,"k.-")
+PyPlot.xlabel("Nodes (#)")
+PyPlot.ylabel("Requred Iterations(#)")
+PyPlot.savefig("./figures/$figname.pdf",transparent = true)
+
+rho = 1000
+mu = 0.001
+U0 = 0.001
+ell = Outlet_pos-Inlet_pos
+D_H = (Top_pos-Bot_pos)*2
+ReD = rho/mu*U0*D_H
+eff = 24/ReD
+DP = eff*4*ell/D_H*(0.5*rho*U0^2)
+DPDX = DP/ell
+
+
+dp = mean(P_val[:,2])-mean(P_val[:,end-1])

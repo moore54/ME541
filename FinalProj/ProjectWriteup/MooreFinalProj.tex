@@ -18,7 +18,42 @@ linkcolor=blue}
 \usepackage{placeins}
 \usepackage[utf8]{inputenc}
 
+%Julia input
+\usepackage[T1]{fontenc}
+\usepackage{beramono}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames]{xcolor}
 
+\definecolor{myred}{RGB}{200,50,50}
+\definecolor{mycomments}{RGB}{75,100,175}
+
+%%
+%% Julia definition (c) 2014 Jubobs
+%%
+\lstdefinelanguage{Julia}%
+{morekeywords={abstract,break,case,catch,const,continue,do,else,elseif,%
+		end,export,false,for,function,immutable,import,importall,if,in,%
+		macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
+		using,while},%
+	sensitive=true,%
+	alsoother={\$},%
+	morecomment=[l]\#,%
+	morecomment=[n]{\#=}{=\#},%
+	morestring=[s]{"}{"},%
+	morestring=[m]{'}{'},%
+}[keywords,comments,strings]%
+
+\lstset{%
+	language       		 	  = Julia,
+	basicstyle           	  = \ttfamily,
+	tabsize				    	 =2,
+	breaklines			 	 =true,
+	keywordstyle     	 = \bfseries\color{myred},
+	stringstyle      	 	  = \color{magenta},
+	commentstyle    	= \color{mycomments},
+	showstringspaces = false,
+}
+% End Julia input
 
 \usepackage{graphicx}
 
@@ -107,10 +142,10 @@ linkcolor=blue}
             L = Out-In
 \end{equation}
 \begin{equation}
-            D_H = 2*(Top-Bot)
+            D_H = 2 (Top-Bot)
             \end{equation}
             \begin{equation}
-            Re_D = \rho/\mu*U_0*D_H
+            Re_D = \rho U_0 D_H / \mu
             \end{equation}
             \begin{equation}
             f = 24/Re_D
@@ -169,5 +204,25 @@ linkcolor=blue}
 \label{f:3b}
 \end{figure}
 
+\section{Validation}
+
+\subsection{Pressure}
+According to the analytical equation above  $\Delta P = 0.006pa$.  On the numerical side, the mean pressure on the inlet minus the mean pressure on the outlet is 0.00645 pa.  If I use the second column of pressures, the mean is 0.00598.\\
+
+\noindent Analytical U-Velocity
+
+\noindent [0.0, 4.65088e-5, 0.000137329, 0.00022522, 0.000310181, 0.000392212, 0.000471313, 0.000547485, 0.000620728, 0.00069104, 0.000758423, 0.000822876, 0.000884399, 0.000942993, 0.000998657, 0.00105139, 0.0011012, 0.00114807, 0.00119202, 0.00123303, 0.00127112, 0.00130627, 0.0013385, 0.0013678, 0.00139417, 0.0014176, 0.00143811, 0.00145569, 0.00147034, 0.00148206, 0.00149084, 0.0014967, 0.00149963, 0.00149963, 0.0014967, 0.00149084, 0.00148206, 0.00147034, 0.00145569, 0.00143811, 0.0014176, 0.00139417, 0.0013678, 0.0013385, 0.00130627, 0.00127112, 0.00123303, 0.00119202, 0.00114807, 0.0011012, 0.00105139, 0.000998657, 0.000942993, 0.000884399, 0.000822876, 0.000758423, 0.00069104, 0.000620728, 0.000547485, 0.000471313, 0.000392212, 0.000310181, 0.00022522, 0.000137329, 4.65088e-5, 0.0]\\
+
+\noindent Numerical U-Velocity
+
+\noindent [0.0, 4.68517e-5, 0.000137639, 0.0002255, 0.000310428, 0.000392422, 0.000471485, 0.000547618, 0.000620821, 0.000691096, 0.000758443, 0.000822862, 0.000884352, 0.000942915, 0.000998549, 0.00105126, 0.00110103, 0.00114788, 0.0011918, 0.0012328, 0.00127086, 0.001306, 0.00133821, 0.00136749, 0.00139384, 0.00141727, 0.00143776, 0.00145533, 0.00146997, 0.00148168, 0.00149047, 0.00149632, 0.00149925, 0.00149925, 0.00149632, 0.00149046, 0.00148168, 0.00146996, 0.00145532, 0.00143775, 0.00141726, 0.00139383, 0.00136748, 0.00133819, 0.00130598, 0.00127085, 0.00123278, 0.00119179, 0.00114786, 0.00110101, 0.00105124, 0.000998529, 0.000942895, 0.000884332, 0.000822842, 0.000758424, 0.000691078, 0.000620804, 0.000547602, 0.000471471, 0.000392411, 0.000310418, 0.000225493, 0.000137634, 4.685e-5, 0.0]
+
+
+\section{Code}
+\noindent \bf{Code can be found at: https://github.com/moore54/ME541.git under /FinalProj/Solve.jl as well as in Appendix A.  Code will be removed from github when grades are posted to prevent future unauthorized use.}
+
+
+\section{Appendix A. Included Code}
+\lstinputlisting[language=Julia]{../Solve.jl}
 
 \end{document}
