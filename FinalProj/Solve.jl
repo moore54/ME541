@@ -695,6 +695,8 @@ for grid_i = 1:NG
     PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "U Velocity x 1E-4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(u_val*1E4),maximum(u_val*1E4),8),1))
     PyPlot.xlabel("X-Position (m)")
     PyPlot.ylabel("Y-Position (m)")
+    xlim([Inlet_pos,Outlet_pos])
+    ylim([Bot_pos,Top_pos])
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
     figname = "v_contour$grid_i"
@@ -703,6 +705,8 @@ for grid_i = 1:NG
     PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "V Velocity x 1E-4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(v_val*1E4),maximum(v_val*1E4),8),3))
     PyPlot.xlabel("X-Position (m)")
     PyPlot.ylabel("Y-Position (m)")
+    xlim([Inlet_pos,Outlet_pos])
+    ylim([Bot_pos,Top_pos])
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
 
@@ -712,6 +716,8 @@ for grid_i = 1:NG
     PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "Pressure (Pa)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(P_val),maximum(P_val),8),3))
     PyPlot.xlabel("X-Position (m)")
     PyPlot.ylabel("Y-Position (m)")
+    xlim([Inlet_pos,Outlet_pos])
+    ylim([Bot_pos,Top_pos])
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
 
@@ -723,6 +729,8 @@ for grid_i = 1:NG
     PyPlot.plot([Inlet_pos,Outlet_pos,Outlet_pos,Inlet_pos,Inlet_pos],[Bot_pos,Bot_pos,Top_pos,Top_pos,Bot_pos],"k")
     PyPlot.xlabel("X-Position (m)")
     PyPlot.ylabel("Y-Position (m)")
+    xlim([Inlet_pos,Outlet_pos])
+    ylim([Bot_pos,Top_pos])
     PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "Pressure (Pa)",pad = 0.3,aspect = 30)
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
@@ -759,3 +767,5 @@ DPDX = DP/ell
 
 
 dp = mean(P_val[:,2])-mean(P_val[:,end-1])
+middle_idx = round(Int, length(P_val[:,2])/2)
+dp_center = (P_val[middle_idx,2])-mean(P_val[middle_idx,end-1])

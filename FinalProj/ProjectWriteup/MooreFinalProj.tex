@@ -66,12 +66,12 @@ linkcolor=blue}
 \author{Kevin R. Moore}
 \affil{\vspace{-10pt}Brigham Young University}
 \renewcommand\Authands{, }
-\date{}
+\date{\today}
 
 \begin{document}
 
 \maketitle
-\vspace{0pt}
+\vspace{-30pt}
 
 \begin{table*}[h]
 \vspace{20pt}
@@ -81,8 +81,9 @@ linkcolor=blue}
     $\alpha_{U}$ & 0.6 & U-relaxation factor  \\
     $\alpha_{V}$ & 0.6 & V-relaxation factor  \\
     $\alpha_{P}$ & 1.0 & P-relaxation factor  \\
-    Convergence Criteria  & 1E-6 & P' Norm Convergence Criteria  \\
+    Convergence Criteria  & 1E-6 & Norm of P' \\
     Model Accuracy Criteria  & \% & Outlet U-Velocity Integral \% Error  \\
+    Finest Mesh  & 4096 & Nodes (64x64) \\
 
   \end{tabular}
   \caption{Summary of solver parameters.}
@@ -133,11 +134,13 @@ linkcolor=blue}
 
 
 
-\noindent Norm of pressure correction was used as the main convergence criteria.
+\noindent Norm of pressure correction was used as the main convergence criteria calculated as:
     \begin{equation}
       Convergence\,Criteria = \sqrt{\sum_{n=1}^N \bf P_{\rm n}^{'2}}
     \end{equation}
 
+
+\noindent Analytical pressure and U-Velocity profile was calculated by: 
 \begin{equation}
             L = Out-In
 \end{equation}
@@ -171,14 +174,14 @@ linkcolor=blue}
        Integral\,Error\,(\%) = \frac{\int_{Bot}^{Top}{(u_{analytical}-u_{numerical})}}{\int_{Bot}^{Top}{u_{analytical}}} \times 100
     \end{equation}
     
-\noindent Numerical values were splined using cubic b-splines to keep error calculations consistent over 100 samples regardless of grid size.
+\noindent Numerical values were splined using cubic b-splines to keep error calculations consistent over 100 samples regardless of grid size.  Outlet U-Velocity was used.
 
 
 \begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm .5cm .0cm 0cm},clip,width=0.85\textwidth]{error_4}
 \vspace{-5pt}
-\caption{Percent integral error of numerical and analytical, converges about 0.125\%. Updated every 10 iterations.}
+\caption{Percent integral error of numerical and analytical, converges about 0.125\% for the finest grid, which is shown here. Updated every 10 iterations.}
 \label{f:3b}
 \end{figure}
 
@@ -207,8 +210,10 @@ linkcolor=blue}
 \section{Validation}
 
 \subsection{Pressure}
-According to the analytical equation above  $\Delta P = 0.006pa$.  On the numerical side, the mean pressure on the inlet minus the mean pressure on the outlet is 0.00645 pa.  If I use the second column of pressures, the mean is 0.00598.\\
+According to the analytical equation above  $\Delta P = 0.006\,pa$.  I calculate, on the numerical side, $\Delta P = 0.00645\,pa$, which I calculated from the mean pressure on the inlet minus the mean pressure on the outlet.  Using only the centerline pressures, the numerical $\Delta P = 0.00587\,pa$.\\
 
+
+\subsection{Outlet U-Velocity}
 \noindent Analytical U-Velocity
 
 \noindent [0.0, 4.65088e-5, 0.000137329, 0.00022522, 0.000310181, 0.000392212, 0.000471313, 0.000547485, 0.000620728, 0.00069104, 0.000758423, 0.000822876, 0.000884399, 0.000942993, 0.000998657, 0.00105139, 0.0011012, 0.00114807, 0.00119202, 0.00123303, 0.00127112, 0.00130627, 0.0013385, 0.0013678, 0.00139417, 0.0014176, 0.00143811, 0.00145569, 0.00147034, 0.00148206, 0.00149084, 0.0014967, 0.00149963, 0.00149963, 0.0014967, 0.00149084, 0.00148206, 0.00147034, 0.00145569, 0.00143811, 0.0014176, 0.00139417, 0.0013678, 0.0013385, 0.00130627, 0.00127112, 0.00123303, 0.00119202, 0.00114807, 0.0011012, 0.00105139, 0.000998657, 0.000942993, 0.000884399, 0.000822876, 0.000758423, 0.00069104, 0.000620728, 0.000547485, 0.000471313, 0.000392212, 0.000310181, 0.00022522, 0.000137329, 4.65088e-5, 0.0]\\
