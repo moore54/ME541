@@ -13,8 +13,8 @@ rc("image",interpolation = "spline16")
 
 meshgrid(x,y) = (repmat(x',length(y),1),repmat(y,1,length(x)))
 
-NG = 2
-factor = linspace(1,NG,NG)
+NG = 4
+factor = linspace(1,NG,2)
 end_error = zeros(factor)
 final_iter = zeros(factor)
 factor = round.(Int, factor)
@@ -639,13 +639,16 @@ for grid_i = 1:NG
         end
     end
 
+    rc("figure.subplot", left=0.17, bottom=0.18, top=0.97, right=.9)
+
     # G = (mean(P_val[:,2]-P_val[:,end]))/(u_x[end-1]-u_x[2])
     figname = "outlet_$grid_i"
     figure("outlet_$grid_i")
-    PyPlot.plot(u_val[:,end],u_y,"k.")
-    PyPlot.plot(u_anal,y_anal,"bx-")
-    PyPlot.xlabel("U Velocity (m/s)")
-    PyPlot.ylabel("y-position (m)")
+    PyPlot.plot(u_val[:,end]*1E4,u_y,"k.",label = "Numerical U-Velocity")
+    PyPlot.plot(u_anal*1E4,y_anal,"bx-",label = "Analytical U-Velocity")
+    PyPlot.xlabel("U-Velocity *1E4 (m/s)")
+    PyPlot.ylabel("y-position *1E4 (m)")
+    PyPlot.legend(loc = "best")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
 
@@ -676,61 +679,62 @@ for grid_i = 1:NG
     PyPlot.ylabel("Integral Error (%)")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
-
+    rc("figure.subplot", left=0.17, bottom=0.3, top=0.97, right=.9)
     # CONTOUR PLOTS
     figname = "u_contour$grid_i"
     figure(figname)
-    CS = PyPlot.contourf(Xu,Yu,u_val,origin = "lower",cmap = PyPlot.cm[:viridis])
-    PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    CS = PyPlot.contourf(Xu,Yu,u_val*1E4,interpolation = "spline16",origin = "lower",cmap = PyPlot.cm[:viridis],levels = linspace(minimum(u_val*1E4),maximum(u_val*1E4),1000))
+    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "U Velocity x 1E4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(u_val*1E4),maximum(u_val*1E4),8),1))
+    PyPlot.xlabel("X-Position (m)")
+    PyPlot.ylabel("Y-Position (m)")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
 
     figname = "v_contour$grid_i"
     figure(figname)
-    CS = PyPlot.contourf(Xv,Yv,v_val,origin = "lower",cmap = PyPlot.cm[:viridis])
-    PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    CS = PyPlot.contourf(Xv,Yv,v_val*1E4,interpolation = "spline16",origin = "lower",cmap = PyPlot.cm[:viridis],levels = linspace(minimum(v_val*1E4),maximum(v_val*1E4),1000))
+    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "V Velocity x 1E4 (m/s)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(v_val*1E4),maximum(v_val*1E4),8),3))
+    PyPlot.xlabel("X-Position (m)")
+    PyPlot.ylabel("Y-Position (m)")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
-
 
 
     figname = "p_contour$grid_i"
     figure(figname)
-    CS = PyPlot.contourf(Xp,Yp,P_val,origin = "lower",cmap = PyPlot.cm[:viridis])
-    PyPlot.colorbar(orientation = "horizontal",extend = "both")
+    CS = PyPlot.contourf(Xp,Yp,P_val,interpolation = "spline16",origin = "lower",cmap = PyPlot.cm[:viridis],levels = linspace(minimum(P_val),maximum(P_val),1000))
+    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "Pressure (Pa)",pad = 0.3,aspect = 30,ticks = round.(linspace(minimum(P_val),maximum(P_val),8),3))
+    PyPlot.xlabel("X-Position (m)")
+    PyPlot.ylabel("Y-Position (m)")
     PyPlot.savefig("./figures/$figname.pdf",transparent = true)
+
+
+    figname = "stream$grid_i"
+    speed = sqrt.(u_val.^2 + v_val.^2)
+    lw = 1 * speed / maximum(speed) # Line Widths
+    figure(figname)
+    CS = PyPlot.streamplot(Xp,Yp,u_val,-v_val,color = P_val,linewidth=lw,cmap = PyPlot.cm[:viridis],arrowsize = 0.000001)
+    PyPlot.plot([Inlet_pos,Outlet_pos,Outlet_pos,Inlet_pos,Inlet_pos],[Bot_pos,Bot_pos,Top_pos,Top_pos,Bot_pos],"k")
+    PyPlot.xlabel("X-Position (m)")
+    PyPlot.ylabel("Y-Position (m)")
+    PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "Pressure (Pa)",pad = 0.3,aspect = 30)
+    PyPlot.savefig("./figures/$figname.pdf",transparent = true)
+
     PyPlot.pause(0.0000000005)
 
     final_iter[grid_i] = iter
     end_error[grid_i] = total_error
 end
 
-figname = "GridCon_Error"
-PyPlot.figure(figname)
-PyPlot.plot(N_nodes,end_error*100)
-PyPlot.xlabel("Nodes (#)")
-PyPlot.ylabel("Converged Integral Error (%)")
-PyPlot.savefig("./figures/$figname.pdf",transparent = true)
-
-figname = "GridCon_Iters"
-PyPlot.figure(figname)
-PyPlot.plot(N_nodes,final_iter)
-PyPlot.xlabel("Nodes (#)")
-PyPlot.ylabel("Requred Iterations(#)")
-PyPlot.savefig("./figures/$figname.pdf",transparent = true)
-
-
-figname = "stream"#$grid_i"
-speed = sqrt.(u_val.^2 + v_val.^2)
-lw = 1 * speed / maximum(speed) # Line Widths
-figure()
-CS = PyPlot.streamplot(Xp,Yp,u_val,-v_val,color = P_val,linewidth=lw,cmap = PyPlot.cm[:viridis],arrowsize = 0.000001)
-PyPlot.plot([Inlet_pos,Outlet_pos,Outlet_pos,Inlet_pos,Inlet_pos],[Bot_pos,Bot_pos,Top_pos,Top_pos,Bot_pos],"k")
-PyPlot.colorbar(orientation = "horizontal",extend = "both",label = "Pressure (Pa)")
-# PyPlot.clabel(CS)
-# PyPlot.colorbar(orientation = "horizontal",extend = "both")
+# rc("figure.subplot", left=0.17, bottom=0.18, top=0.97, right=.9)
+# figname = "GridCon_Error"
+# PyPlot.figure(figname)
+# PyPlot.plot(N_nodes,end_error*100,"k.-")
+# PyPlot.xlabel("Nodes (#)")
+# PyPlot.ylabel("Converged Integral Error (%)")
 # PyPlot.savefig("./figures/$figname.pdf",transparent = true)
-
-
-figure()
-CS = PyPlot.contourf(Xp,Yp,u_val,origin = "lower",interpolation = "spline32",cmap = PyPlot.cm[:viridis])
-PyPlot.colorbar(orientation = "horizontal",extend = "both")
+#
+# figname = "GridCon_Iters"
+# PyPlot.figure(figname)
+# PyPlot.plot(N_nodes,final_iter,"k.-")
+# PyPlot.xlabel("Nodes (#)")
+# PyPlot.ylabel("Requred Iterations(#)")
 # PyPlot.savefig("./figures/$figname.pdf",transparent = true)

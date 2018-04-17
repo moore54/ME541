@@ -1,0 +1,173 @@
+
+\documentclass[10pt,english]{article}
+\usepackage[bottom=0.8in,margin=0.8in]{geometry}
+\geometry{a4paper}
+\usepackage[english]{babel}
+%\usepackage{indentfirst}
+\selectlanguage{english}
+\usepackage{multicol}
+%\usepackage{varioref}% smart page, figure, table, and equation referencing
+\usepackage[colorlinks]{hyperref}% hyperlinks [must be loaded after dropping]
+\hypersetup{colorlinks,breaklinks,
+citecolor = blue,
+urlcolor=blue,
+linkcolor=blue}
+\usepackage[noabbrev]{cleveref}
+\usepackage{float}
+
+\usepackage{placeins}
+\usepackage[utf8]{inputenc}
+
+
+
+\usepackage{graphicx}
+
+\usepackage{amssymb}
+\usepackage{authblk}
+\graphicspath{{../figures/}} % allows figures to be placed in a different folder
+
+
+\title{\vspace{-20pt}2D SIMPLE CFD Program Verification with Poiseuille Flow}
+\author{Kevin R. Moore}
+\affil{\vspace{-10pt}Brigham Young University}
+\renewcommand\Authands{, }
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{0pt}
+
+\begin{table*}[h]
+\vspace{20pt}
+\centering
+  \begin{tabular}{lcl}
+    \textbf{Name} & \textbf{Value} & \textbf{Description}  \\
+    $\alpha_{U}$ & 0.6 & U-relaxation factor  \\
+    $\alpha_{V}$ & 0.6 & V-relaxation factor  \\
+    $\alpha_{P}$ & 1.0 & P-relaxation factor  \\
+    Convergence Criteria  & 1E-6 & P' Norm Convergence Criteria  \\
+    Model Accuracy Criteria  & \% & Outlet U-Velocity Integral \% Error  \\
+
+  \end{tabular}
+  \caption{Summary of solver parameters.}
+  \label{tab:params}
+\end{table*}
+
+\vspace{0pt}
+
+\section{Contour Plots}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[trim={.0cm 0.5cm .0cm 0cm},clip,width=0.9\textwidth]{p_contour4}
+\vspace{-5pt}
+\caption{Pressure contour of finest solution with 4096 nodes.}
+\label{f:3b}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[trim={.0cm 1.0cm .0cm 0cm},clip,width=0.9\textwidth]{u_contour4}
+\vspace{-5pt}
+\caption{U-Velocity contour of finest solution.}
+\label{f:3b}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[trim={.0cm 1.0cm .0cm 0cm},clip,width=0.9\textwidth]{v_contour4}
+\vspace{-5pt}
+\caption{V-Velocity contour of finest solution.}
+\label{f:3b}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[trim={.0cm 1.0cm .0cm 0cm},clip,width=0.9\textwidth]{stream4}
+\vspace{-5pt}
+\caption{Stream plot showing U and V velocities' relative direction and pressure in the color. Boundaries outlined in black.}
+\label{f:3b}
+\end{figure}
+
+
+
+
+\FloatBarrier
+\section{Convergence Criteria Independence}
+
+
+
+\noindent Norm of pressure correction was used as the main convergence criteria.
+    \begin{equation}
+      Convergence\,Criteria = \sqrt{\sum_{n=1}^N \bf P_{\rm n}^{'2}}
+    \end{equation}
+
+\begin{equation}
+            L = Out-In
+\end{equation}
+\begin{equation}
+            D_H = 2*(Top-Bot)
+            \end{equation}
+            \begin{equation}
+            Re_D = \rho/\mu*U_0*D_H
+            \end{equation}
+            \begin{equation}
+            f = 24/Re_D
+            \end{equation}
+            \begin{equation}
+            \frac{\Delta p}{\Delta x} = \frac{4 f L (0.5 \rho U_0^2)}{L D_H}
+            \end{equation}
+            \begin{equation}
+            u_{analytical} = \frac{{\Delta p}/{\Delta x}}{(2 \mu) y (Top-y)}
+            \end{equation}
+      
+\begin{figure}[htbp]
+\centering
+\includegraphics[trim={.0cm 0.0cm .0cm 0cm},clip,width=0.75\textwidth]{outlet_4}
+\vspace{-5pt}
+\caption{Analytical versus numerical solution; solution progression from left to right towards convergence.  Updated every 10 iterations.}
+\label{f:3b}
+\end{figure}
+
+\noindent Integral error in percentage defined as:
+
+    \begin{equation}
+       Integral\,Error\,(\%) = \frac{\int_{Bot}^{Top}{(u_{analytical}-u_{numerical})}}{\int_{Bot}^{Top}{u_{analytical}}} \times 100
+    \end{equation}
+    
+\noindent Numerical values were splined using cubic b-splines to keep error calculations consistent over 100 samples regardless of grid size.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[trim={.0cm .5cm .0cm 0cm},clip,width=0.85\textwidth]{error_4}
+\vspace{-5pt}
+\caption{Percent integral error of numerical and analytical, converges about 0.125\%. Updated every 10 iterations.}
+\label{f:3b}
+\end{figure}
+
+\FloatBarrier
+\vspace{5pt}
+\section{Grid Independence}
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[trim={.0cm 0cm .0cm 0cm},clip,width=0.75\textwidth]{GridCon_Error}
+\vspace{-5pt}
+\caption{Doubling number of nodes in each direction cuts error by a factor of approximately 4 for each iteration.}
+\label{f:3b}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[trim={.0cm 0cm .0cm 0cm},clip,width=0.75\textwidth]{GridCon_Iters}
+\vspace{-5pt}
+\caption{Doubling number of nodes in each direction increases required iterations for convergence in an asymptotic way indicating a better convergence criteria may be needed.}
+\label{f:3b}
+\end{figure}
+
+
+\end{document}
