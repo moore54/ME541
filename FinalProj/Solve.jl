@@ -23,9 +23,9 @@ total_error = 0.0
 N_nodes = (4*2.^factor).^2
 
 # Relaxation factors
-u_relax = 0.6
-v_relax = 0.6
-p_relax = 1.0
+u_relax = 0.7
+v_relax = 0.7
+p_relax = 0.7
 
 # Initialize variables in this scope for post processing
 u_val = []
@@ -310,7 +310,7 @@ for grid_i = 1:NG
         #
         #
         #
-
+        # println("v_vel")
         for i = 1:N_xt
             for j = 1:N_yt-1
 
@@ -432,6 +432,7 @@ for grid_i = 1:NG
         #
         #
         #
+        # println("pressure")
 
         for i = 2:N_xt-1
             for j = 2:N_yt-1
@@ -545,20 +546,20 @@ for grid_i = 1:NG
             v_val[j,2:end-1] = v_val_new[j,2:end-1]+ds_n[j,2:end-1].*(P_cor[j+1,2:end-1]-P_cor[j,2:end-1])
         end
         v_val[end-1,:] = v_val_new[end-1,:]
-        # println("uval")
+        # println("corrected uval")
         # for i = 1:length(u_val[:,1])
         #     println(u_val[i,:])
         # end
-
-        # println("vval")
+        #
+        # println("corrected vval")
         # for i = 1:length(v_val[:,1])
         #     println(v_val[i,:])
         # end
 
 
 
-        u_val_star = (u_val_new)
-        v_val_star = (v_val_new)
+        u_val_star = (u_val)#_new)
+        v_val_star = (v_val)#_new)
         P_val_star = (P_val)
 
 

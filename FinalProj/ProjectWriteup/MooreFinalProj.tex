@@ -143,7 +143,7 @@ linkcolor=blue}
     \end{equation}
 
 
-\noindent Analytical pressure and U-Velocity profile was calculated by: 
+\noindent Analytical pressure and U-Velocity profile was calculated by:
 \begin{equation}
             L = Out-In
 \end{equation}
@@ -162,7 +162,7 @@ linkcolor=blue}
             \begin{equation}
             u_{analytical} = \frac{{\Delta p}/{\Delta x}}{(2 \mu) y (Top-y)}
             \end{equation}
-      
+
 \begin{figure}[H]
 \centering
 \includegraphics[trim={.0cm 0.0cm .0cm 0cm},clip,width=0.75\textwidth]{outlet_4}
@@ -176,7 +176,7 @@ linkcolor=blue}
     \begin{equation}
        Integral\,Error\,(\%) = \frac{\int_{Bot}^{Top}{(u_{analytical}-u_{numerical})}}{\int_{Bot}^{Top}{u_{analytical}}} \times 100
     \end{equation}
-    
+
 \noindent Numerical values were splined using cubic b-splines to keep error calculations consistent over 100 samples regardless of grid size.  U-Velocity at outlet was used.
 
 
@@ -184,7 +184,7 @@ linkcolor=blue}
 \centering
 \includegraphics[trim={.0cm .5cm .0cm 0cm},clip,width=0.85\textwidth]{error_4}
 \vspace{-5pt}
-\caption{Percent integral error of numerical and analytical, converges with about 0.125\% error for the finest grid, which is shown here. Updated every 10 iterations. (Recall convergence criteria was $l^2$ norm of P' was less than 1E-6)}
+\caption{Percent integral error of numerical and analytical, converges with about 0.077\% error for the finest grid, which is shown here. Updated every 10 iterations. (Recall convergence criteria was $l^2$ norm of P' was less than 1E-6 though based on the trend shown here either a tighter or difference criteria may lead to even better results)}
 \label{f:3b}
 \end{figure}
 
@@ -206,7 +206,7 @@ linkcolor=blue}
 \centering
 \includegraphics[trim={.0cm 0cm .0cm 0cm},clip,width=0.75\textwidth]{GridCon_Iters}
 \vspace{-5pt}
-\caption{Doubling number of nodes in each direction increases required iterations for convergence in a $\sqrt{Nodes}$ manner.}
+\caption{Doubling number of nodes in each direction increases required iterations for convergence in a linear manner.}
 \label{f:3b}
 \end{figure}
 
@@ -224,7 +224,7 @@ According to the analytical equation above  $\Delta P = 0.006\,pa$.  I calculate
 \newpage
 \noindent Numerical U-Velocity
 
-\noindent [0.0, 4.68517e-5, 0.000137639, 0.0002255, 0.000310428, 0.000392422, 0.000471485, 0.000547618, 0.000620821, 0.000691096, 0.000758443, 0.000822862, 0.000884352, 0.000942915, 0.000998549, 0.00105126, 0.00110103, 0.00114788, 0.0011918, 0.0012328, 0.00127086, 0.001306, 0.00133821, 0.00136749, 0.00139384, 0.00141727, 0.00143776, 0.00145533, 0.00146997, 0.00148168, 0.00149047, 0.00149632, 0.00149925, 0.00149925, 0.00149632, 0.00149046, 0.00148168, 0.00146996, 0.00145532, 0.00143775, 0.00141726, 0.00139383, 0.00136748, 0.00133819, 0.00130598, 0.00127085, 0.00123278, 0.00119179, 0.00114786, 0.00110101, 0.00105124, 0.000998529, 0.000942895, 0.000884332, 0.000822842, 0.000758424, 0.000691078, 0.000620804, 0.000547602, 0.000471471, 0.000392411, 0.000310418, 0.000225493, 0.000137634, 4.685e-5, 0.0]
+\noindent [0.0, 4.69612e-5, 0.000137936, 0.000225965, 0.000311048, 0.000393186, 0.000472377, 0.000548623, 0.000621922, 0.000692275, 0.00075968, 0.000824139, 0.000885651, 0.000944217, 0.000999837, 0.00105251, 0.00110224, 0.00114903, 0.00119288, 0.00123378, 0.00127175, 0.00130678, 0.00133887, 0.00136803, 0.00139426, 0.00141756, 0.00143793, 0.00145538, 0.00146989, 0.00148149, 0.00149016, 0.00149591, 0.00149874, 0.00149866, 0.00149565, 0.00148972, 0.00148088, 0.00146912, 0.00145444, 0.00143684, 0.00141633, 0.00139289, 0.00136654, 0.00133726, 0.00130506, 0.00126995, 0.0012319, 0.00119094, 0.00114705, 0.00110024, 0.0010505, 0.00099783, 0.000942236, 0.000883715, 0.000822266, 0.000757889, 0.000690583, 0.00062035, 0.00054719, 0.000471103, 0.00039209, 0.000310152, 0.000225291, 0.000137509, 4.6808e-5, 0.0]
 
 
 \section{Code}
